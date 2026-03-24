@@ -1,5 +1,5 @@
 [
-  { "id": 1, "cat": "scooter", "name": "Honda Activa 6G", "price": 400, "img": "scooter_1.jpg", "stock": 1, "rented": 0 },
+  { "id": 1, "cat": "scooter", "name": "Honda Activa 6G", "price": 400, "img": "scooter_1.jpg", "stock": 4, "rented": 0 },
   { "id": 2, "cat": "scooter", "name": "TVS Jupiter", "price": 400, "img": "scooter_2.jpg", "stock": 2, "rented": 0 },
   { "id": 3, "cat": "scooter", "name": "Suzuki Access 125", "price": 450, "img": "scooter_3.jpg", "stock": 1, "rented": 0 },
   { "id": 4, "cat": "scooter", "name": "Yamaha Fascino", "price": 450, "img": "scooter_4.jpg", "stock": 1, "rented": 0 },

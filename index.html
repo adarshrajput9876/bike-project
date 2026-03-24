@@ -3,217 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheel Adventure | Premium Rentals Aligarh</title>
+    <title>Wheel Adventure | Aligarh</title>
     <style>
-        :root {
-            --bg-dark: #0a0a0a; --overlay-dark: rgba(0, 0, 0, 0.85); 
-            --surface-dark: rgba(22, 22, 22, 0.96); --accent-gold: #D4AF37; 
-            --accent-hover: #F3E5AB; --text-light: #F8F9FA; --text-muted: #A0A0A0;
-            --transition: all 0.3s ease;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-light); line-height: 1.6; }
-        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('image_0.png'); background-size: cover; background-position: center; z-index: -2; filter: blur(12px); transform: scale(1.1); }
-        body::after { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--overlay-dark); z-index: -1; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
-        
-        nav { padding: 40px 0; }
-        .logo { font-size: 1.3rem; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; text-decoration: none; cursor: pointer; }
-        .slogan { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 5px; }
-
-        .category-title { font-size: 1.5rem; border-left: 4px solid var(--accent-gold); padding-left: 15px; margin: 40px 0 30px; text-transform: uppercase; }
-        .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        
-        .vehicle-card { background: var(--surface-dark); border-radius: 12px; overflow: hidden; border: 1px solid rgba(212, 175, 55, 0.1); transition: var(--transition); display: flex; flex-direction: column; }
-        .vehicle-card:hover { transform: translateY(-10px); border-color: var(--accent-gold); box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
-        .vehicle-image { width: 100%; height: 220px; object-fit: cover; border-bottom: 2px solid var(--accent-gold); }
-        .vehicle-info { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
-        .price-tag { font-size: 1.8rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 20px; }
-        .price-tag span { font-size: 0.9rem; color: var(--text-muted); }
-
-        .btn { background: var(--accent-gold); color: #000; border: none; padding: 16px; font-weight: 800; cursor: pointer; border-radius: 6px; text-transform: uppercase; width: 100%; transition: var(--transition); text-align: center; display: block; text-decoration: none; }
-        .btn:hover { background: var(--accent-hover); }
-        .btn.disabled { background: #333; color: #777; cursor: not-allowed; }
-
-        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(20px); }
-        .spinner { width: 50px; height: 50px; border: 5px solid rgba(212, 175, 55, 0.1); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 9000; }
-        .modal-box { background: var(--surface-dark); border: 2px solid var(--accent-gold); padding: 50px; border-radius: 20px; text-align: center; max-width: 450px; width: 90%; }
-
-        #booking-page { display: none; padding: 40px 0; }
-        .pricing-box { background: rgba(0,0,0,0.5); padding: 25px; border-radius: 10px; margin: 25px 0; border: 1px solid rgba(255,255,255,0.05); }
-
-        .docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
-        .doc-item { background: rgba(255,255,255,0.02); border: 1px dashed var(--accent-gold); padding: 20px; border-radius: 10px; text-align: left; }
-        .doc-item h4 { color: var(--accent-gold); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
-
-        .founders-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin: 40px 0 80px; }
-        .founder-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px; border-radius: 15px; text-align: center; }
-        .contact-bar { background: var(--surface-dark); border: 1px solid var(--accent-gold); padding: 40px; border-radius: 15px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px; margin-bottom: 80px; }
-        footer { text-align: center; padding: 60px 0; color: var(--text-muted); border-top: 1px solid rgba(212, 175, 55, 0.1); font-size: 0.8rem; }
-
-        /* Floating WhatsApp Button */
-        .wa-float {
-            position: fixed; bottom: 30px; right: 30px; background-color: #25d366; color: white;
-            width: 60px; height: 60px; border-radius: 50px; text-align: center; font-size: 30px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.5); z-index: 10000; display: flex;
-            justify-content: center; align-items: center; text-decoration: none; transition: var(--transition);
-        }
-        .wa-float:hover { transform: scale(1.1); background-color: #128c7e; }
+        :root { --bg: #0a0a0a; --gold: #D4AF37; --text: #f8f9fa; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; }
+        body::before { content: ""; position: fixed; inset: 0; background: url('image_0.png') center/cover; filter: blur(10px); z-index: -2; opacity: 0.3; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; }
+        nav { padding: 30px 0; text-align: center; }
+        .logo { font-size: 2rem; color: var(--gold); font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 50px; }
+        .card { background: rgba(22,22,22,0.9); border: 1px solid rgba(212,175,55,0.2); border-radius: 12px; overflow: hidden; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .info { padding: 20px; }
+        .btn { background: var(--gold); color: #000; padding: 12px; border: none; width: 100%; font-weight: bold; border-radius: 5px; cursor: pointer; display: block; text-decoration: none; text-align: center; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: #111; border: 2px solid var(--gold); padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; }
+        .wa-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 999; }
     </style>
 </head>
 <body>
-
-    <div id="loader"><div class="spinner"></div><p style="color:var(--accent-gold); letter-spacing:2px; font-weight: bold;">SECURING YOUR RESERVATION...</p></div>
-
     <div id="modal" class="modal">
-        <div class="modal-box" id="modal-content">
-            </div>
+        <div class="modal-box" id="modal-content"></div>
     </div>
 
     <div class="container">
-        <nav>
-            <a onclick="closeAll()" class="logo">Two Wheel Adventure</a>
-            <span class="slogan">Premium Fleet. Zero Hassle. Conquer the Roads.</span>
-        </nav>
-
-        <div id="home-page">
-            <h2 class="category-title">City Scooters</h2><div id="scooter-grid" class="fleet-grid"></div>
-            <h2 class="category-title">Electric Vehicles</h2><div id="ev-grid" class="fleet-grid"></div>
-            <h2 class="category-title">Motorcycles</h2><div id="motorcycle-grid" class="fleet-grid"></div>
-
-            <div style="text-align:center; margin:80px 0 40px; color:var(--accent-gold); text-transform:uppercase;"><h2>Meet the Visionaries</h2></div>
-            <div class="founders-grid">
-                <div class="founder-card"><h3>Girish Kumar</h3><p>Strategic Operations & Fleet Management.</p></div>
-                <div class="founder-card"><h3>Himanshu Kumar</h3><p>Logistics & Green Mobility Lead.</p></div>
-                <div class="founder-card"><h3>Adarsh Verma</h3><p>Customer Experience & Tech Lead.</p></div>
-            </div>
-
-            <div class="contact-bar">
-                <div style="text-align:center;"><h4>EMAIL SUPPORT</h4><p>wheeladventure@gmail.com</p></div>
-                <div style="text-align:center;"><h4>PHONE / WHATSAPP</h4><p>+91 9258395352<br>+91 8859905812</p></div>
-            </div>
-        </div>
-
-        <div id="booking-page">
-            <button class="btn" style="background:none; border:1px solid var(--accent-gold); color:var(--accent-gold); width:auto; margin-bottom:30px; padding: 10px 25px;" onclick="closeAll()">← BACK</button>
-            <div style="background:var(--surface-dark); padding:50px; border-radius:20px; border:1px solid var(--accent-gold);">
-                <h2 id="sel-name" style="color:var(--accent-gold); font-size:2.5rem; margin-bottom:10px;">Vehicle</h2>
-                
-                <div class="pricing-box">
-                    <p style="display:flex; justify-content:space-between;"><span>Daily Rent:</span> <span id="sel-price" style="color:var(--accent-gold); font-weight:800;">₹0</span></p>
-                    <p style="display:flex; justify-content:space-between; margin-top:10px;"><span>Security Deposit:</span> <span>₹1,500</span></p>
-                    <p style="display:flex; justify-content:space-between; margin-top:10px;"><span>Helmet Accessory:</span> <span>₹50 / day</span></p>
-                </div>
-
-                <div class="docs-grid">
-                    <div class="doc-item"><h4>Indian Residents</h4><p>• Original DL<br>• Aadhar Card</p></div>
-                    <div class="doc-item"><h4>International</h4><p>• IDP License<br>• Passport Copy</p></div>
-                </div>
-
-                <button class="btn" onclick="startBooking()">CONFIRM RESERVATION</button>
-            </div>
-        </div>
+        <nav><a class="logo" onclick="location.reload()">Wheel Adventure</a></nav>
         
-        <footer>&copy; 2026 Two Wheel Adventure | Aligarh Hub</footer>
+        <div id="home">
+            <h2 style="border-left:4px solid var(--gold); padding-left:10px; margin:30px 0;">CITY SCOOTERS</h2><div id="scooter-grid" class="fleet-grid"></div>
+            <h2 style="border-left:4px solid var(--gold); padding-left:10px; margin:30px 0;">ELECTRIC VEHICLES</h2><div id="ev-grid" class="fleet-grid"></div>
+            <h2 style="border-left:4px solid var(--gold); padding-left:10px; margin:30px 0;">MOTORCYCLES</h2><div id="motorcycle-grid" class="fleet-grid"></div>
+        </div>
+
+        <div id="booking" style="display:none; text-align:center;">
+            <h1 id="sel-name" style="color:var(--gold); font-size:3rem;">Bike</h1>
+            <div style="background:#161616; padding:30px; border-radius:15px; margin:20px 0;">
+                <p>Security Deposit: ₹1,500 | Helmet: ₹50/day</p>
+                <p style="margin-top:10px;">Docs Required: DL & Aadhar Card</p>
+            </div>
+            <button class="btn" onclick="confirm()">CONFIRM RESERVATION</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--gold); margin-top:20px; cursor:pointer;">← BACK</button>
+        </div>
     </div>
 
-    <a href="https://wa.me/919258395352?text=Hello Two Wheel Adventure! I have a question about renting a bike." class="wa-float" target="_blank">
-        <svg style="width:35px; height:35px; fill:white;" viewBox="0 0 24 24"><path d="M12.031 6.172c-2.203 0-4.007 1.797-4.007 3.991 0 .633.148 1.258.438 1.828l-1.016 3.719 3.82-1.001c.539.289 1.141.438 1.758.438 2.211 0 4.016-1.797 4.016-4s-1.805-3.975-4.009-3.975zm.016 7.242c-.516 0-1.031-.141-1.484-.406l-.219-.125-2.234.586.594-2.172-.141-.227c-.258-.43-.391-.914-.391-1.406 0-1.508 1.227-2.734 2.734-2.734 1.516 0 2.742 1.227 2.742 2.734 0 1.516-1.226 2.75-2.6 2.75zM12 2C6.477 2 2 6.477 2 12c0 1.891.531 3.656 1.445 5.164L2 22l4.984-1.312C8.398 21.539 10.125 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-    </a>
+    <a href="https://wa.me/919258395352" class="wa-float" target="_blank"><svg style="width:35px; height:35px; fill:white;" viewBox="0 0 24 24"><path d="M12.031 6.172c-2.203 0-4.007 1.797-4.007 3.991 0 .633.148 1.258.438 1.828l-1.016 3.719 3.82-1.001c.539.289 1.141.438 1.758.438 2.211 0 4.016-1.797 4.016-4s-1.805-3.975-4.009-3.975zm.016 7.242c-.516 0-1.031-.141-1.484-.406l-.219-.125-2.234.586.594-2.172-.141-.227c-.258-.43-.391-.914-.391-1.406 0-1.508 1.227-2.734 2.734-2.734 1.516 0 2.742 1.227 2.742 2.734 0 1.516-1.226 2.75-2.6 2.75zM12 2C6.477 2 2 6.477 2 12c0 1.891.531 3.656 1.445 5.164L2 22l4.984-1.312C8.398 21.539 10.125 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg></a>
 
     <script>
-        async function loadFleet() {
-            try {
-                const res = await fetch('/api/bikes');
-                const fleetData = await res.json();
-                const grids = { scooter: 'scooter-grid', ev: 'ev-grid', motorcycle: 'motorcycle-grid' };
-                
-                Object.values(grids).forEach(id => document.getElementById(id).innerHTML = '');
-
-                fleetData.forEach(v => {
-                    const grid = document.getElementById(grids[v.cat]);
-                    const stock = (v.stock !== undefined) ? v.stock : 1;
-                    const rented = (v.rented !== undefined) ? v.rented : 0;
-                    const availableCount = stock - rented;
-                    const isAvailable = availableCount > 0;
-
-                    const btnHtml = isAvailable ? 
-                        `<button class="btn" onclick="openBooking('${v.name}', ${v.price})">Rent Now</button>` : 
-                        `<button class="btn disabled">Sold Out</button>`;
-
-                    if (grid) {
-                        grid.innerHTML += `
-                            <div class="vehicle-card" style="opacity:${isAvailable ? 1 : 0.6}">
-                                <img src="${v.img}" class="vehicle-image" onerror="this.src='https://placehold.co/400x300?text=Bike'">
-                                <div class="vehicle-info">
-                                    <h3>${v.name}</h3>
-                                    <p style="font-size:0.8rem; color:var(--accent-gold); margin-bottom:10px;">${isAvailable ? availableCount + ' units left' : 'Sold Out'}</p>
-                                    <div class="price-tag">₹${v.price}<span>/day</span></div>
-                                    ${btnHtml}
-                                </div>
-                            </div>`;
-                    }
-                });
-            } catch (e) { console.error("Server connection failed"); }
+        async function load() {
+            const res = await fetch('/api/bikes');
+            const data = await res.json();
+            const grids = { scooter: 'scooter-grid', ev: 'ev-grid', motorcycle: 'motorcycle-grid' };
+            Object.values(grids).forEach(id => document.getElementById(id).innerHTML = '');
+            data.forEach(v => {
+                const grid = document.getElementById(grids[v.cat]);
+                const avail = v.stock - v.rented;
+                grid.innerHTML += `<div class="card"><img src="${v.img}"><div class="info"><h3>${v.name}</h3><p style="color:var(--gold)">₹${v.price}/day • ${avail > 0 ? avail + ' left' : 'SOLD OUT'}</p>${avail > 0 ? `<button class="btn" style="margin-top:10px" onclick="book('${v.name}')">RENT NOW</button>` : ''}</div></div>`;
+            });
         }
-
-        function openBooking(n, p) {
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('booking-page').style.display = 'block';
-            document.getElementById('sel-name').innerText = n;
-            document.getElementById('sel-price').innerText = '₹' + p + ' / day';
-            window.scrollTo(0,0);
-        }
-
-        function closeAll() {
-            document.getElementById('booking-page').style.display = 'none';
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('home-page').style.display = 'block';
-        }
-
-        async function startBooking() {
-            const bikeName = document.getElementById('sel-name').innerText.split(' / day')[0];
-            document.getElementById('loader').style.display = 'flex';
-
-            try {
-                const response = await fetch('/api/book', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ bikeName: bikeName })
-                });
-                const result = await response.json();
-
-                setTimeout(() => {
-                    document.getElementById('loader').style.display = 'none';
-                    if (result.success) {
-                        const modalBox = document.getElementById('modal-content');
-                        modalBox.innerHTML = `
-                            <h2 style="color:var(--accent-gold); margin-bottom:20px;">RESERVATION SECURED!</h2>
-                            <p>You have successfully reserved the <b>${bikeName}</b>.</p>
-                            <p style="margin: 15px 0; font-size: 0.9rem;">To speed up your pickup in Aligarh, please chat with us now.</p>
-                            <a href="https://wa.me/919258395352?text=Hi Adarsh! I just reserved the ${bikeName} on your website." 
-                               target="_blank" class="btn" style="background:#25d366; color:white; margin-bottom:10px; display:block; text-decoration:none;">
-                               CHAT WITH ADMIN
-                            </a>
-                            <button class="btn" style="background:none; border:1px solid var(--accent-gold); color:var(--accent-gold);" onclick="closeAll()">BACK TO HOME</button>
-                        `;
-                        document.getElementById('modal').style.display = 'flex';
-                        loadFleet();
-                    } else {
-                        alert("Error: " + result.message);
-                        closeAll();
-                    }
-                }, 4000);
-            } catch (e) {
-                document.getElementById('loader').style.display = 'none';
-                alert("Server error. Please try again later.");
+        function book(n) { document.getElementById('home').style.display='none'; document.getElementById('booking').style.display='block'; document.getElementById('sel-name').innerText=n; }
+        async function confirm() {
+            const name = document.getElementById('sel-name').innerText;
+            const res = await fetch('/api/book', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({bikeName:name}) });
+            if((await res.json()).success) {
+                document.getElementById('modal-content').innerHTML = `<h2>SUCCESS!</h2><p>Reserved ${name}</p><a href="https://wa.me/919258395352?text=I+booked+${name}" class="btn" style="margin-top:20px">CHAT WITH ADMIN</a>`;
+                document.getElementById('modal').style.display='flex';
             }
         }
-
-        loadFleet();
+        load();
     </script>
 </body>
 </html>
