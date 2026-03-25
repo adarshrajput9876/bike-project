@@ -6,23 +6,18 @@ const https = require('https');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+const ADMIN_PIN = "1234";
 
 const TG_TOKEN = "8616007843:AAE1Q_LJ-ELpvhZLHDBdYvuAxbBJu_T5Hi4"; 
 const TG_CHAT_ID = "5598413859";
 
-// Robust Notification Function
 function sendTelegram(message) {
     const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
-    
     https.get(url, (res) => {
         let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => {
-            console.log("Telegram API Status:", res.statusCode, data);
-        });
-    }).on('error', (e) => {
-        console.error('Telegram Connection Error:', e.message);
-    });
+        res.on('data', (d) => data += d);
+        res.on('end', () => console.log(">>> Telegram Response:", data));
+    }).on('error', (e) => console.error(">>> Telegram Error:", e.message));
 }
 
 app.use(cors());
@@ -33,39 +28,44 @@ const BIKES_FILE = path.join(__dirname, 'bikes.json');
 const getFleet = () => JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8'));
 const saveFleet = (data) => fs.writeFileSync(BIKES_FILE, JSON.stringify(data, null, 2));
 
-// --- DIAGNOSTIC ROUTE (Test your bot instantly) ---
-// Visit yoursite.com/api/test-bot in your browser
+// Test Route to verify bot
 app.get('/api/test-bot', (req, res) => {
-    sendTelegram("✅ Wheel Adventure Bot is linked to the Server successfully!");
-    res.send("Check your Telegram! If you got a message, the connection is perfect.");
+    sendTelegram("✅ Wheel Adventure Server is communicating with the Bot!");
+    res.send("Check your Telegram!");
 });
 
-// --- UPDATED BOOKING ROUTE (Case Insensitive) ---
+app.get('/api/bikes', (req, res) => res.json(getFleet()));
+
 app.post('/api/book', (req, res) => {
     const { bikeName } = req.body;
-    console.log(`Incoming request for: "${bikeName}"`);
-
+    console.log(`>>> Booking Attempt: ${bikeName}`);
     let fleet = getFleet();
-    
-    // Pro-Fix: Trim spaces and ignore Case Sensitivity
     const bike = fleet.find(b => b.name.trim().toLowerCase() === bikeName.trim().toLowerCase());
 
     if (bike && (bike.stock - bike.rented) > 0) {
         bike.rented = (bike.rented || 0) + 1;
         saveFleet(fleet);
-
-        console.log(`Booking confirmed for ${bike.name}. Notifying Adarsh...`);
-        sendTelegram(`🚀 <b>WHEEL ADVENTURE: NEW BOOKING!</b>\n\nBike: <b>${bike.name}</b>\n📍 Hub: Aligarh\nInventory updated.`);
-
+        sendTelegram(`🚀 <b>NEW BOOKING</b>\n\nBike: <b>${bike.name}</b>\nHub: Aligarh`);
         return res.json({ success: true });
-    } else {
-        console.log(`Failed: Bike "${bikeName}" not found or out of stock.`);
-        res.status(400).json({ success: false, message: "Bike not found or unavailable" });
     }
+    console.log(">>> Booking failed: Bike not found or out of stock.");
+    res.status(400).json({ success: false });
 });
 
-app.get('/api/bikes', (req, res) => res.json(getFleet()));
+app.post('/api/admin/reset', (req, res) => {
+    const { pin, bikeId, resetAll } = req.body;
+    if (pin !== ADMIN_PIN) return res.status(401).json({ success: false });
+    let fleet = getFleet();
+    if (resetAll) fleet.forEach(b => b.rented = 0);
+    else { const bike = fleet.find(b => b.id === bikeId); if (bike) bike.rented = 0; }
+    saveFleet(fleet);
+    res.json({ success: true });
+});
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
-app.listen(PORT, () => console.log(`Wheel Adventure Engine Live on Port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`>>> SERVER INITIALIZED ON PORT ${PORT}`);
+    console.log(`>>> MONITORING ID: ${TG_CHAT_ID}`);
+});
