@@ -3,185 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheel Adventure | Aligarh Hub</title>
+    <title>Wheel Adventure | Aligarh</title>
     <style>
-        :root {
-            --bg-dark: #0a0a0a; --surface: #161616; --gold: #D4AF37; 
-            --gold-hover: #F3E5AB; --text: #f8f9fa; --muted: #a0a0a0;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg-dark); color: var(--text); line-height: 1.6; }
-        
-        /* Background Blur Effect */
-        body::before { content: ""; position: fixed; inset: 0; background: url('image_0.png') center/cover; filter: blur(15px); opacity: 0.2; z-index: -1; }
-        
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        nav { padding: 40px 0; text-align: center; }
-        .logo { font-size: 2rem; color: var(--gold); font-weight: 800; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; text-decoration: none; }
-        
-        .section-title { font-size: 1.4rem; border-left: 4px solid var(--gold); padding-left: 15px; margin: 40px 0 20px; text-transform: uppercase; }
-        .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        
-        .card { background: var(--surface); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 12px; overflow: hidden; transition: 0.3s ease; }
-        .card:hover { transform: translateY(-10px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid var(--gold); }
-        .card-body { padding: 20px; }
-        .card-price { font-size: 1.5rem; color: var(--gold); font-weight: bold; margin: 10px 0; }
-        
-        .btn { background: var(--gold); color: #000; border: none; padding: 14px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; display: block; text-decoration: none; text-align: center; }
-        .btn:hover { background: var(--gold-hover); }
-        .btn-disabled { background: #333; color: #777; cursor: not-allowed; }
-
-        /* Booking View */
-        #booking-page { display: none; padding: 40px 0; }
-        .booking-container { background: var(--surface); border: 1px solid var(--gold); padding: 40px; border-radius: 20px; max-width: 600px; margin: 0 auto; }
-        
-        /* Modal */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-box { background: var(--surface); border: 2px solid var(--gold); padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; }
-
-        /* WhatsApp Button */
-        .wa-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 999; text-decoration: none; transition: 0.3s; }
-        .wa-float:hover { transform: scale(1.1); }
-
-        #loader { display: none; color: var(--gold); font-weight: bold; margin: 20px 0; letter-spacing: 2px; }
+        :root { --bg: #0a0a0a; --gold: #D4AF37; --text: #f8f9fa; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); }
+        body::before { content:""; position:fixed; inset:0; background:url('image_0.png') center/cover; filter:blur(15px); opacity:0.2; z-index:-1; }
+        .container { max-width:1200px; margin:0 auto; padding:20px; }
+        nav { padding:40px 0; text-align:center; }
+        .logo { font-size:2rem; color:var(--gold); font-weight:800; text-transform:uppercase; text-decoration:none; letter-spacing:3px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:25px; margin-bottom:50px; }
+        .card { background:rgba(22,22,22,0.9); border:1px solid rgba(212,175,55,0.1); border-radius:12px; overflow:hidden; }
+        .card img { width:100%; height:200px; object-fit:cover; border-bottom:2px solid var(--gold); }
+        .p-20 { padding:20px; }
+        .btn { background:var(--gold); color:#000; border:none; padding:14px; width:100%; font-weight:bold; border-radius:6px; cursor:pointer; text-transform:uppercase; text-align:center; text-decoration:none; display:block; }
+        .modal { position:fixed; inset:0; background:rgba(0,0,0,0.95); display:none; justify-content:center; align-items:center; z-index:1000; }
+        .modal-box { background:#111; border:2px solid var(--gold); padding:40px; border-radius:20px; text-align:center; width:90%; max-width:400px; }
+        .wa-float { position:fixed; bottom:30px; right:30px; background:#25d366; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
     </style>
 </head>
 <body>
-
-    <div id="modal" class="modal">
-        <div class="modal-box" id="modal-content"></div>
-    </div>
-
+    <div id="modal" class="modal"><div class="modal-box" id="modal-content"></div></div>
     <div class="container">
         <nav><a href="/" class="logo">Wheel Adventure</a></nav>
-
-        <div id="home-page">
-            <h2 class="section-title">City Scooters</h2>
-            <div id="scooter-grid" class="fleet-grid"></div>
-
-            <h2 class="section-title">Electric Vehicles</h2>
-            <div id="ev-grid" class="fleet-grid"></div>
-
-            <h2 class="section-title">Motorcycles</h2>
-            <div id="motorcycle-grid" class="fleet-grid"></div>
+        <div id="home">
+            <h2 style="border-left:4px solid var(--gold); padding-left:15px; margin-bottom:20px;">OUR FLEET</h2>
+            <div id="fleet-grid" class="grid"></div>
         </div>
-
-        <div id="booking-page">
-            <button class="btn" style="width: auto; background: none; border: 1px solid var(--gold); color: var(--gold); margin-bottom: 20px;" onclick="goHome()">← BACK TO FLEET</button>
-            <div class="booking-container">
-                <h1 id="display-name" style="color:var(--gold); margin-bottom: 10px;">Bike Name</h1>
-                <p id="display-price" style="font-size: 1.2rem; margin-bottom: 20px;">₹0 / day</p>
-                
-                <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-                    <p>• Security Deposit: <b>₹1,500</b></p>
-                    <p>• Mandatory Helmet: <b>₹50 / day</b></p>
-                    <p>• Req: <b>Aadhar Card & Driving License</b></p>
-                </div>
-
-                <div id="loader">SENDING REQUEST...</div>
-                <button id="confirm-btn" class="btn" onclick="startBooking()">CONFIRM RESERVATION</button>
+        <div id="booking" style="display:none; max-width:600px; margin:0 auto; text-align:center;">
+            <h1 id="sel-name" style="color:var(--gold); font-size:3rem; margin-bottom:20px;">Bike</h1>
+            <div style="background:#161616; padding:30px; border-radius:15px; margin-bottom:20px;">
+                <p>Deposit: ₹1,500 | Helmet: ₹50/day</p>
+                <p>Required: DL & Aadhar Card</p>
             </div>
+            <button class="btn" onclick="confirmBooking()">CONFIRM RESERVATION</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--gold); margin-top:20px; cursor:pointer;">← BACK</button>
         </div>
-
-        <footer style="text-align: center; padding: 60px 0; color: var(--muted); border-top: 1px solid rgba(212,175,55,0.1); margin-top: 50px;">
-            &copy; 2026 Wheel Adventure | Aligarh Hub Hub Support: +91 9258395352
-        </footer>
     </div>
-
-    <a href="https://wa.me/919258395352?text=Hi Wheel Adventure! I need help with a booking." class="wa-float" target="_blank">
+    <a href="https://wa.me/919258395352" class="wa-float" target="_blank">
         <svg style="width:35px; height:35px; fill:white;" viewBox="0 0 24 24"><path d="M12.031 6.172c-2.203 0-4.007 1.797-4.007 3.991 0 .633.148 1.258.438 1.828l-1.016 3.719 3.82-1.001c.539.289 1.141.438 1.758.438 2.211 0 4.016-1.797 4.016-4s-1.805-3.975-4.009-3.975zm.016 7.242c-.516 0-1.031-.141-1.484-.406l-.219-.125-2.234.586.594-2.172-.141-.227c-.258-.43-.391-.914-.391-1.406 0-1.508 1.227-2.734 2.734-2.734 1.516 0 2.742 1.227 2.742 2.734 0 1.516-1.226 2.75-2.6 2.75zM12 2C6.477 2 2 6.477 2 12c0 1.891.531 3.656 1.445 5.164L2 22l4.984-1.312C8.398 21.539 10.125 22 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
     </a>
-
     <script>
-        let currentBike = ""; // Hidden variable to store exact name
-
-        async function fetchFleet() {
-            try {
-                const res = await fetch('/api/bikes');
-                const fleet = await res.json();
-                
-                const grids = { scooter: 'scooter-grid', ev: 'ev-grid', motorcycle: 'motorcycle-grid' };
-                Object.values(grids).forEach(id => document.getElementById(id).innerHTML = '');
-
-                fleet.forEach(v => {
-                    const grid = document.getElementById(grids[v.cat]);
-                    const avail = v.stock - v.rented;
-                    const isAvail = avail > 0;
-
-                    grid.innerHTML += `
-                        <div class="card" style="opacity: ${isAvail ? 1 : 0.5}">
-                            <img src="${v.img}" onerror="this.src='https://placehold.co/400x300?text=Bike'">
-                            <div class="card-body">
-                                <h3>${v.name}</h3>
-                                <p style="font-size: 0.8rem; color: var(--gold);">${isAvail ? avail + ' units available' : 'SOLD OUT'}</p>
-                                <div class="card-price">₹${v.price}<span>/day</span></div>
-                                ${isAvail ? `<button class="btn" onclick="openBooking('${v.name}', ${v.price})">Rent Now</button>` : `<button class="btn-disabled btn">Currently Rented</button>`}
-                            </div>
-                        </div>`;
-                });
-            } catch (err) { console.error("Could not load fleet"); }
+        let selectedBike = "";
+        async function load() {
+            const res = await fetch('/api/bikes');
+            const data = await res.json();
+            const grid = document.getElementById('fleet-grid');
+            grid.innerHTML = '';
+            data.forEach(v => {
+                const avail = v.stock - v.rented;
+                grid.innerHTML += `<div class="card"><img src="${v.img}"><div class="p-20"><h3>${v.name}</h3><p style="color:var(--gold); margin:10px 0;">₹${v.price}/day • ${avail > 0 ? avail + ' left' : 'OUT'}</p>${avail > 0 ? `<button class="btn" onclick="openBooking('${v.name}')">Rent</button>` : `<button class="btn" style="background:#333; cursor:not-allowed;">Rented</button>`}</div></div>`;
+            });
         }
-
-        function openBooking(name, price) {
-            currentBike = name; // Save the exact name for the API call
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('booking-page').style.display = 'block';
-            document.getElementById('display-name').innerText = name;
-            document.getElementById('display-price').innerText = `₹${price} / day`;
-            window.scrollTo(0,0);
-        }
-
-        function goHome() {
-            document.getElementById('booking-page').style.display = 'none';
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('home-page').style.display = 'block';
-        }
-
-        async function startBooking() {
-            const btn = document.getElementById('confirm-btn');
-            const loader = document.getElementById('loader');
-            
-            btn.style.display = 'none';
-            loader.style.display = 'block';
-
-            try {
-                const response = await fetch('/api/book', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ bikeName: currentBike }) // Sending exact name
-                });
-
-                const result = await response.json();
-
-                // Wait 2 seconds to simulate processing
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    if (result.success) {
-                        const modalBox = document.getElementById('modal-content');
-                        modalBox.innerHTML = `
-                            <h2 style="color:var(--gold); margin-bottom:15px;">BOOKING SUCCESS!</h2>
-                            <p>You have reserved the <b>${currentBike}</b>.</p>
-                            <p style="margin: 15px 0; font-size: 0.9rem; color:var(--muted);">Adarsh has been notified. Check Telegram or click below to chat on WhatsApp.</p>
-                            <a href="https://wa.me/919258395352?text=Hi! I just booked the ${currentBike}." target="_blank" class="btn" style="background:#25d366; color:white; margin-bottom:10px;">CHAT WITH HUB</a>
-                            <button class="btn" style="background:none; border:1px solid var(--gold); color:var(--gold);" onclick="goHome()">BACK TO HOME</button>
-                        `;
-                        document.getElementById('modal').style.display = 'flex';
-                        fetchFleet(); // Update stock display
-                    } else {
-                        alert("Error: " + result.message);
-                        btn.style.display = 'block';
-                    }
-                }, 2000);
-
-            } catch (err) {
-                loader.style.display = 'none';
-                btn.style.display = 'block';
-                alert("Server connection failed. Try again.");
+        function openBooking(n) { selectedBike = n; document.getElementById('home').style.display='none'; document.getElementById('booking').style.display='block'; document.getElementById('sel-name').innerText=n; }
+        async function confirmBooking() {
+            const res = await fetch('/api/book', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({bikeName:selectedBike}) });
+            if((await res.json()).success) {
+                document.getElementById('modal-content').innerHTML = `<h2>RESERVED!</h2><p>Check Telegram for details.</p><button class="btn" style="margin-top:20px" onclick="location.reload()">OK</button>`;
+                document.getElementById('modal').style.display='flex';
             }
         }
-
-        fetchFleet();
+        load();
     </script>
 </body>
 </html>
