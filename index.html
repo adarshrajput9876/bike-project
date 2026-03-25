@@ -56,13 +56,19 @@
             });
         }
         function openBooking(n) { selectedBike = n; document.getElementById('home').style.display='none'; document.getElementById('booking').style.display='block'; document.getElementById('sel-name').innerText=n; }
-        async function confirmBooking() {
-            const res = await fetch('/api/book', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({bikeName:selectedBike}) });
-            if((await res.json()).success) {
-                document.getElementById('modal-content').innerHTML = `<h2>RESERVED!</h2><p>Check Telegram for details.</p><button class="btn" style="margin-top:20px" onclick="location.reload()">OK</button>`;
-                document.getElementById('modal').style.display='flex';
-            }
-        }
+       async function confirmBooking() {
+    console.log("Button clicked, starting fetch...");
+    const res = await fetch('/api/book', { // Use a relative path, NO localhost
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bikeName: selectedBike })
+    });
+    
+    const result = await res.json();
+    if (result.success) {
+        // Show success modal...
+    }
+}
         load();
     </script>
 </body>
