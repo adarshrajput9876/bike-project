@@ -27,15 +27,10 @@ app.use(express.static(__dirname));
 const BIKES_FILE = path.join(__dirname, 'bikes.json');
 const HISTORY_FILE = path.join(__dirname, 'history.json');
 
-// Ensure history file exists
 if (!fs.existsSync(HISTORY_FILE)) fs.writeFileSync(HISTORY_FILE, JSON.stringify([]));
 
-// --- ROUTES ---
-
-// 1. Get Inventory
 app.get('/api/bikes', (req, res) => res.json(JSON.parse(fs.readFileSync(BIKES_FILE))));
 
-// 2. Process Booking
 app.post('/api/book', (req, res) => {
     const { bikeName, customerName, phone, days } = req.body;
     let fleet = JSON.parse(fs.readFileSync(BIKES_FILE));
@@ -44,52 +39,23 @@ app.post('/api/book', (req, res) => {
     const bike = fleet.find(b => b.name === bikeName);
     if (bike && (bike.stock - bike.rented) > 0) {
         bike.rented += 1;
-        
-        const total = (bike.price + 50) * days; // Rent + Helmet
+        const total = (bike.price + 50) * days;
         const newBooking = {
-            id: Date.now(),
-            bikeName, customerName, phone, days,
-            totalPrice: total,
-            status: "Reserved (Pending Pickup)",
-            date: new Date().toLocaleString()
+            id: Date.now(), bikeName, customerName, phone, days,
+            totalPrice: total, status: "Reserved (Pending)", date: new Date().toLocaleString()
         };
-        
         history.push(newBooking);
         fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
         fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
-
-        sendDiscord(`🚀 **NEW BOOKING**\n**Customer:** ${customerName}\n**Bike:** ${bikeName}\n**Total:** ₹${total}\n**Hub:** Aligarh`);
+        sendDiscord(`🚀 **NEW BOOKING**\n**Customer:** ${customerName}\n**Bike:** ${bikeName}\n**Phone:** ${phone}`);
         return res.json({ success: true });
     }
-    res.status(400).json({ success: false });
+    res.status(400).json({ success: false, message: "Not Available" });
 });
 
-// 3. Admin: Get History
 app.get('/api/admin/history', (req, res) => res.json(JSON.parse(fs.readFileSync(HISTORY_FILE))));
 
-// 4. Admin: Update Status (Handover/Return)
-app.post('/api/admin/update', (req, res) => {
-    const { id, status } = req.body;
-    let history = JSON.parse(fs.readFileSync(HISTORY_FILE));
-    let fleet = JSON.parse(fs.readFileSync(BIKES_FILE));
-    
-    const booking = history.find(h => h.id === id);
-    if (booking) {
-        if (status === "Returned") {
-            const bike = fleet.find(b => b.name === booking.bikeName);
-            if (bike) bike.rented = Math.max(0, bike.rented - 1);
-            booking.status = "Completed (Returned)";
-        } else {
-            booking.status = status;
-        }
-        fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
-        fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
-        res.json({ success: true });
-    } else res.status(404).json({ success: false });
-});
-
-// --- PAGE ROUTING (The fix for "Cannot GET") ---
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
-app.listen(PORT, () => console.log(`Server LIVE on ${PORT}`));
+app.listen(PORT, () => console.log(`Wheel Adventure running on ${PORT}`));

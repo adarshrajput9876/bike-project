@@ -8,127 +8,141 @@
         :root { --gold: #D4AF37; --bg: #0a0a0a; --card: #161616; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
         .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-        .logo { color: var(--gold); text-align: center; font-size: 2.2rem; margin: 40px 0; letter-spacing: 3px; font-weight: 800; }
+        .logo { color: var(--gold); text-align: center; font-size: 2.5rem; margin: 30px 0; letter-spacing: 3px; font-weight: 800; text-transform: uppercase; }
         
+        .cat-title { border-left: 4px solid var(--gold); padding-left: 15px; margin: 40px 0 20px; font-size: 1.5rem; color: var(--gold); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow: hidden; transition: 0.3s; }
-        .card:hover { border-color: var(--gold); transform: translateY(-5px); }
-        .card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid var(--gold); }
+        .card { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow: hidden; position: relative; }
+        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--gold); }
         .p-20 { padding: 20px; }
         
+        .not-available-label { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
+        
         .btn { background: var(--gold); color: #000; width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; text-transform: uppercase; }
-        .btn-back { background: none; color: var(--gold); border: 1px solid var(--gold); margin-bottom: 20px; width: auto; padding: 8px 20px; }
+        .btn:disabled { background: #333; color: #777; cursor: not-allowed; }
 
-        /* Loader Overlay */
+        .doc-box { background: #111; border: 1px dashed var(--gold); padding: 15px; margin: 20px 0; font-size: 0.85rem; text-align: left; line-height: 1.6; }
+        
         #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
         .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        footer { margin-top: 60px; padding: 40px; border-top: 1px solid #333; text-align: center; color: #888; }
-        .wa-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 3000; }
+        .modal-box { background: #161616; padding: 40px; border-radius: 20px; border: 2px solid var(--gold); text-align: center; max-width: 400px; width: 90%; }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner"></div>
-        <p style="margin-top:20px; color:var(--gold); font-weight:bold;">PROCESSING YOUR ADVENTURE...</p>
+    <div id="loader"><div class="spinner"></div></div>
+
+    <div id="success-modal" class="modal">
+        <div class="modal-box">
+            <h2 style="color:var(--gold)">THANK YOU!</h2>
+            <p style="margin: 20px 0; line-height: 1.5;">Thank you for choosing Wheel Adventure. Your vehicle is reserved! Please collect your vehicle from our official place.</p>
+            <button class="btn" onclick="location.reload()">CLOSE</button>
+        </div>
     </div>
 
     <div class="container">
-        <h1 class="logo">WHEEL ADVENTURE</h1>
+        <h1 class="logo">Wheel Adventure</h1>
 
-        <div id="fleet-view">
-            <h2 style="border-left:4px solid var(--gold); padding-left:15px; margin-bottom:30px;">ALIGARH HUB FLEET</h2>
-            <div id="fleet-grid" class="grid"></div>
+        <div id="home-view">
+            <div id="sections"></div>
         </div>
 
-        <div id="booking-view" style="display:none; max-width:500px; margin: 0 auto;">
-            <button class="btn btn-back" onclick="goBack()">← BACK TO FLEET</button>
-            <div style="background:var(--card); padding:40px; border-radius:20px; border:1px solid var(--gold);">
-                <h2 id="display-bike" style="color:var(--gold); margin-bottom:20px;"></h2>
-                <input type="text" id="cust-name" placeholder="Full Name" style="width:100%; padding:12px; margin-bottom:15px; background:#222; border:1px solid #444; color:#fff;">
-                <input type="text" id="cust-phone" placeholder="WhatsApp Number" style="width:100%; padding:12px; margin-bottom:15px; background:#222; border:1px solid #444; color:#fff;">
-                <select id="rent-days" style="width:100%; padding:12px; margin-bottom:15px; background:#222; border:1px solid #444; color:#fff;">
-                    <option value="1">1 Day</option><option value="2">2 Days</option><option value="3">3 Days</option>
+        <div id="booking-view" style="display:none; max-width:500px; margin: 0 auto; text-align: center;">
+            <p onclick="goBack()" style="cursor:pointer; color:var(--gold); margin-bottom:20px;">← Back to Fleet</p>
+            <div style="background:var(--card); padding:30px; border-radius:20px; border:1px solid var(--gold);">
+                <img id="book-img" src="" style="width:100%; border-radius:10px; margin-bottom:15px; border:1px solid var(--gold);">
+                <h2 id="book-name" style="color:var(--gold); margin-bottom:10px;"></h2>
+                
+                <input type="text" id="cust-name" placeholder="Enter Name" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
+                <input type="text" id="cust-phone" placeholder="Phone Number" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
+                <select id="rent-days" style="width:100%; padding:12px; background:#222; border:1px solid #444; color:#fff;">
+                    <option value="1">1 Day</option><option value="2">2 Days</option>
                 </select>
-                <p style="font-size:0.8rem; color:#888; margin-bottom:20px;">* Mandatory Helmet Charge: ₹50/day included.</p>
-                <button class="btn" onclick="processBooking()">CONFIRM RESERVATION</button>
+
+                <div class="doc-box">
+                    <strong>REQUIRED DOCUMENTS:</strong><br>
+                    🇮🇳 <b>Indian:</b> Driving License + Aadhar Card/PAN Card<br>
+                    🌍 <b>Non-Indian:</b> International Driving Permit + Passport Photocopy
+                </div>
+
+                <button class="btn" onclick="confirmBooking()">CONFIRM NOW</button>
             </div>
         </div>
-
-        <footer>
-            <p><b>ALIGARH HUB CO-FOUNDERS</b></p>
-            <p>Girish Rajput: +91 9258395352 | Himanshu: +91 8218173620</p>
-            <p style="margin-top:10px; font-size:0.8rem;">© 2026 Wheel Adventure. All Rights Reserved.</p>
-        </footer>
     </div>
 
-    <a href="https://wa.me/919258395352" class="wa-float" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35">
-    </a>
-
     <script>
-        let selectedBike = "";
+        let bikes = [];
+        let selectedBike = null;
 
-        async function loadFleet() {
+        async function init() {
             const res = await fetch('/api/bikes');
-            const data = await res.json();
-            const grid = document.getElementById('fleet-grid');
-            grid.innerHTML = data.map(b => `
-                <div class="card">
-                    <img src="${b.img}" onerror="this.src='https://placehold.co/400x300?text=Bike+Image'">
-                    <div class="p-20">
-                        <h3>${b.name}</h3>
-                        <p style="color:var(--gold); font-weight:bold; font-size:1.2rem;">₹${b.price}/day</p>
-                        <p style="font-size:0.8rem; color:#888; margin-bottom:15px;">Available: ${b.stock - b.rented}</p>
-                        <button class="btn" onclick="openBooking('${b.name}')">RENT NOW</button>
-                    </div>
-                </div>
-            `).join('');
+            bikes = await res.json();
+            renderSections();
+        }
+
+        function renderSections() {
+            const sections = {
+                scooter: "SCOOTERS",
+                ev: "EV's",
+                motorcycle: "MOTOR BIKES"
+            };
+            const container = document.getElementById('sections');
+            container.innerHTML = '';
+
+            for (const [key, label] of Object.entries(sections)) {
+                const categoryBikes = bikes.filter(b => b.cat === key);
+                if (categoryBikes.length === 0) continue;
+
+                container.innerHTML += `<div class="cat-title">${label}</div><div class="grid">${categoryBikes.map(b => {
+                    const available = b.stock - b.rented;
+                    return `
+                        <div class="card">
+                            ${available <= 0 ? '<div class="not-available-label">NOT AVAILABLE</div>' : ''}
+                            <img src="${b.img}" onerror="this.src='https://placehold.co/400x300?text=Bike'">
+                            <div class="p-20">
+                                <h3>${b.name}</h3>
+                                <p style="color:var(--gold)">₹${b.price}/day</p>
+                                <button class="btn" ${available <= 0 ? 'disabled' : ''} onclick="openBooking('${b.name}')">
+                                    ${available > 0 ? 'RENT NOW' : 'OUT OF STOCK'}
+                                </button>
+                            </div>
+                        </div>`;
+                }).join('')}</div>`;
+            }
         }
 
         function openBooking(name) {
-            selectedBike = name;
-            document.getElementById('fleet-view').style.display = 'none';
+            selectedBike = bikes.find(b => b.name === name);
+            document.getElementById('home-view').style.display = 'none';
             document.getElementById('booking-view').style.display = 'block';
-            document.getElementById('display-bike').innerText = name;
+            document.getElementById('book-name').innerText = selectedBike.name;
+            document.getElementById('book-img').src = selectedBike.img;
             window.scrollTo(0,0);
         }
 
-        function goBack() {
-            document.getElementById('booking-view').style.display = 'none';
-            document.getElementById('fleet-view').style.display = 'block';
-        }
+        function goBack() { location.reload(); }
 
-        function processBooking() {
-            const name = document.getElementById('cust-name').value;
-            if(!name) return alert("Please enter your name");
-
+        function confirmBooking() {
             document.getElementById('loader').style.display = 'flex';
-
-            // THE 4-SECOND WAIT
             setTimeout(async () => {
                 const res = await fetch('/api/book', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        bikeName: selectedBike,
-                        customerName: name,
+                        bikeName: selectedBike.name,
+                        customerName: document.getElementById('cust-name').value,
                         phone: document.getElementById('cust-phone').value,
                         days: document.getElementById('rent-days').value
                     })
                 });
-
                 document.getElementById('loader').style.display = 'none';
-                if(res.ok) {
-                    alert("Success! Your booking is reserved. Adarsh will contact you shortly.");
-                    location.reload();
-                }
+                if(res.ok) document.getElementById('success-modal').style.display = 'flex';
             }, 4000);
         }
-
-        loadFleet();
+        init();
     </script>
 </body>
 </html>
