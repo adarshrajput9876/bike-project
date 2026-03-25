@@ -12,14 +12,20 @@ const TG_TOKEN = "8616007843:AAE1Q_LJ-ELpvhZLHDBdYvuAxbBJu_T5Hi4";
 const TG_CHAT_ID = "5598413859";
 
 function sendTelegram(message) {
+    // CRITICAL: Notice the word "bot" before the ${TG_TOKEN}
     const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
+    
     https.get(url, (res) => {
         let data = '';
-        res.on('data', (d) => data += d);
-        res.on('end', () => console.log(">>> Telegram Response:", data));
-    }).on('error', (e) => console.error(">>> Telegram Error:", e.message));
+        res.on('data', (chunk) => { data += chunk; });
+        res.on('end', () => {
+            // This will show you exactly what Telegram says in your Render Logs
+            console.log(">>> Telegram Response:", data);
+        });
+    }).on('error', (e) => {
+        console.error(">>> Telegram Connection Error:", e.message);
+    });
 }
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
