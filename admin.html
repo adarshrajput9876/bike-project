@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wheel Adventure Admin</title>
+    <title>Admin | Wheel Adventure</title>
     <style>
         body { background:#0a0a0a; color:#fff; font-family:sans-serif; padding:40px; }
         .card { background:#161616; border:1px solid #D4AF37; padding:20px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; }
-        input { background:#222; border:1px solid #444; color:#fff; padding:10px; margin-bottom:20px; }
         .btn { background:#D4AF37; color:#000; border:none; padding:10px; cursor:pointer; font-weight:bold; }
+        input { background:#222; border:1px solid #444; color:#fff; padding:10px; margin-bottom:20px; }
     </style>
 </head>
 <body>
-    <h1>HUB ADMIN PANEL</h1>
-    <input type="password" id="pin" placeholder="Admin PIN">
-    <button class="btn" onclick="reset(null, true)">RESET ALL BIKES</button>
+    <h1>HUB ADMIN</h1>
+    <input type="password" id="pin" placeholder="PIN">
+    <button class="btn" onclick="reset(null, true)">RESET ALL</button>
     <div id="list" style="margin-top:20px;"></div>
     <script>
         async function load() {
