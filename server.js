@@ -6,15 +6,20 @@ const https = require('https');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "1234"; 
 
-// TELEGRAM CREDENTIALS
+// --- VERIFIED TELEGRAM CREDENTIALS ---
 const TG_TOKEN = "8616007843:AAE1Q_LJ-ELpvhZLHDBdYvuAxbBJu_T5Hi4"; 
-const TG_CHAT_ID = "5598413859";
+const TG_CHAT_ID = "5598413859"; // Confirmed from your JSON output
 
 function sendTelegram(message) {
     const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
-    https.get(url, (res) => {}).on('error', (e) => console.error(e));
+    
+    https.get(url, (res) => {
+        console.log('Telegram Status:', res.statusCode);
+    }).on('error', (e) => {
+        console.error('Telegram Notify Error:', e.message);
+    });
 }
 
 app.use(cors());
@@ -25,21 +30,28 @@ const BIKES_FILE = path.join(__dirname, 'bikes.json');
 const getFleet = () => JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8'));
 const saveFleet = (data) => fs.writeFileSync(BIKES_FILE, JSON.stringify(data, null, 2));
 
-app.get('/api/bikes', (req, res) => res.json(getFleet()));
-
+// --- BOOKING ROUTE ---
 app.post('/api/book', (req, res) => {
     const { bikeName } = req.body;
     let fleet = getFleet();
     const bike = fleet.find(b => b.name === bikeName);
+
     if (bike && (bike.stock - bike.rented) > 0) {
         bike.rented = (bike.rented || 0) + 1;
         saveFleet(fleet);
-        sendTelegram(`🚀 <b>WHEEL ADVENTURE ALERT</b>\n\nSomeone just booked a <b>${bikeName}</b>!`);
+
+        // SEND NOTIFICATION
+        sendTelegram(`🚀 <b>WHEEL ADVENTURE: NEW BOOKING!</b>\n\nSomeone just reserved the <b>${bikeName}</b>.\n📍 Hub: Aligarh`);
+
         return res.json({ success: true });
     }
     res.status(400).json({ success: false });
 });
 
+// Admin and Static Routes
+app.get('/api/bikes', (req, res) => res.json(getFleet()));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.post('/api/admin/reset', (req, res) => {
     const { pin, bikeId, resetAll } = req.body;
     if (pin !== ADMIN_PIN) return res.status(401).json({ success: false });
@@ -50,7 +62,4 @@ app.post('/api/admin/reset', (req, res) => {
     res.json({ success: true });
 });
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-
-app.listen(PORT, () => console.log(`Wheel Adventure Live on ${PORT}`));
+app.listen(PORT, () => console.log(`Wheel Adventure Live | Notifications active for ID ${TG_CHAT_ID}`));
