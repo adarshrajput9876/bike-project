@@ -4,44 +4,46 @@
     <meta charset="UTF-8">
     <title>Wheel Adventure | Admin Hub</title>
     <style>
-        body { background: #0a0a0a; color: #fff; font-family: sans-serif; padding: 20px; }
-        .row { background: #161616; padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; }
-        .status-pending { background: #d4af37; color: #000; }
-        .status-active { background: #25d366; color: #fff; }
-        .btn { border: none; padding: 8px; cursor: pointer; border-radius: 4px; }
+        body { background: #0a0a0a; color: #fff; font-family: sans-serif; padding: 40px; }
+        .booking-row { background: #161616; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .pending { background: #D4AF37; color: #000; }
+        .completed { background: #25d366; color: #fff; }
+        .btn-action { background: #444; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px; }
     </style>
 </head>
 <body>
-    <h1>Aligarh Hub Admin</h1>
-    <div id="booking-list"></div>
+    <h1 style="color:var(--gold)">ALIGARH HUB MANAGEMENT</h1>
+    <div id="history-list"></div>
 
     <script>
         async function loadHistory() {
             const res = await fetch('/api/admin/history');
             const history = await res.json();
-            const list = document.getElementById('booking-list');
+            const list = document.getElementById('history-list');
             
-            list.innerHTML = history.map(h => `
-                <div class="row">
+            list.innerHTML = history.reverse().map(h => `
+                <div class="booking-row">
                     <div>
-                        <strong>${h.customerName}</strong> (${h.phone})<br>
-                        <small>${h.bikeName} | ${h.days} Days | <b>₹${h.totalPrice}</b></small>
+                        <strong style="font-size:1.2rem;">${h.customerName}</strong> <small>(${h.phone})</small><br>
+                        <span style="color:#888;">${h.bikeName} | ${h.days} Days | <b>Total: ₹${h.totalPrice}</b></span>
                     </div>
                     <div>
-                        <span class="badge ${h.status.includes('Reserved') ? 'status-pending' : 'status-active'}">${h.status}</span>
-                        <button class="btn" style="background: #25d366" onclick="update('${h.id}', 'Bike Handed Over (Active)')">GIVE BIKE</button>
-                        <button class="btn" style="background: #ff4444; color:white;" onclick="update('${h.id}', 'Returned')">RETURNED</button>
+                        <span class="status-badge ${h.status.includes('Returned') ? 'completed' : 'pending'}">${h.status}</span>
+                        ${!h.status.includes('Returned') ? `
+                            <button class="btn-action" onclick="updateStatus('${h.id}', 'Handed Over to Customer')">HANDOVER</button>
+                            <button class="btn-action" style="background:#ff4444" onclick="updateStatus('${h.id}', 'Returned')">RETURN</button>
+                        ` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        async function update(id, status) {
-            await fetch('/api/admin/update-status', {
+        async function updateStatus(id, status) {
+            await fetch('/api/admin/update', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ id: parseInt(id), newStatus: status })
+                body: JSON.stringify({ id: parseInt(id), status: status })
             });
             loadHistory();
         }
