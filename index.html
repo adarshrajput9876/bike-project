@@ -14,34 +14,27 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .card { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow: hidden; position: relative; }
         .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--gold); }
-        .p-20 { padding: 20px; }
-        
-        .not-available-label { position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
         
         .btn { background: var(--gold); color: #000; width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; text-transform: uppercase; }
-        .btn:disabled { background: #333; color: #777; cursor: not-allowed; }
+        .btn-back { background: none; color: var(--gold); border: 1px solid var(--gold); padding: 8px 20px; cursor: pointer; border-radius: 4px; margin-bottom: 20px; display: inline-block; }
 
-        .doc-box { background: #111; border: 1px dashed var(--gold); padding: 15px; margin: 20px 0; font-size: 0.85rem; text-align: left; line-height: 1.6; }
+        .doc-box { background: #111; border: 1px dashed var(--gold); padding: 15px; margin: 20px 0; font-size: 0.85rem; text-align: left; }
         
-        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
+        /* Founder Section */
+        footer { margin-top: 80px; padding: 60px 20px; border-top: 1px solid #333; background: #050505; }
+        .founder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .founder-card { text-align: center; padding: 20px; border: 1px solid #222; border-radius: 15px; }
+        .founder-card h4 { color: var(--gold); margin-bottom: 10px; font-size: 1.2rem; }
+        .founder-card p { color: #888; font-size: 0.9rem; line-height: 1.5; }
+
+        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; }
         .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 3000; }
-        .modal-box { background: #161616; padding: 40px; border-radius: 20px; border: 2px solid var(--gold); text-align: center; max-width: 400px; width: 90%; }
     </style>
 </head>
 <body>
 
     <div id="loader"><div class="spinner"></div></div>
-
-    <div id="success-modal" class="modal">
-        <div class="modal-box">
-            <h2 style="color:var(--gold)">THANK YOU!</h2>
-            <p style="margin: 20px 0; line-height: 1.5;">Thank you for choosing Wheel Adventure. Your vehicle is reserved! Please collect your vehicle from our official place.</p>
-            <button class="btn" onclick="location.reload()">CLOSE</button>
-        </div>
-    </div>
 
     <div class="container">
         <h1 class="logo">Wheel Adventure</h1>
@@ -51,32 +44,49 @@
         </div>
 
         <div id="booking-view" style="display:none; max-width:500px; margin: 0 auto; text-align: center;">
-            <p onclick="goBack()" style="cursor:pointer; color:var(--gold); margin-bottom:20px;">← Back to Fleet</p>
+            <div class="btn-back" onclick="location.reload()">← Back</div>
             <div style="background:var(--card); padding:30px; border-radius:20px; border:1px solid var(--gold);">
-                <img id="book-img" src="" style="width:100%; border-radius:10px; margin-bottom:15px; border:1px solid var(--gold);">
-                <h2 id="book-name" style="color:var(--gold); margin-bottom:10px;"></h2>
+                <img id="book-img" src="" style="width:100%; border-radius:10px; margin-bottom:15px;">
+                <h2 id="book-name" style="color:var(--gold)"></h2>
                 
-                <input type="text" id="cust-name" placeholder="Enter Name" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
+                <input type="text" id="cust-name" placeholder="Name" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
                 <input type="text" id="cust-phone" placeholder="Phone Number" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
                 <select id="rent-days" style="width:100%; padding:12px; background:#222; border:1px solid #444; color:#fff;">
                     <option value="1">1 Day</option><option value="2">2 Days</option>
                 </select>
 
                 <div class="doc-box">
-                    <strong>REQUIRED DOCUMENTS:</strong><br>
-                    🇮🇳 <b>Indian:</b> Driving License + Aadhar Card/PAN Card<br>
-                    🌍 <b>Non-Indian:</b> International Driving Permit + Passport Photocopy
+                    <strong>REQUIRED DOCUMENTS:</strong><br><br>
+                    Indian: Driving License + Aadhar Card/PAN Card<br>
+                    Non-Indian: International Driving Permit + Passport Photocopy
                 </div>
 
                 <button class="btn" onclick="confirmBooking()">CONFIRM NOW</button>
             </div>
         </div>
+
+        <footer>
+            <div class="founder-grid">
+                <div class="founder-card">
+                    <h4>Adarsh Verma</h4>
+                    <p>Lead Developer and Technical Strategist. He manages the core system architecture and digital security of Aligarh Hub.</p>
+                    <p style="margin-top:10px; color:var(--gold);">Contact: 9258395352</p>
+                </div>
+                <div class="founder-card">
+                    <h4>Himanshu Kumar</h4>
+                    <p>Operations Head and Logistics Expert. He ensures seamless vehicle maintenance and exceptional customer service on-ground.</p>
+                    <p style="margin-top:10px; color:var(--gold);">Contact: 8859905812</p>
+                </div>
+                <div class="founder-card">
+                    <h4>Girish Kumar</h4>
+                    <p>Business Growth & Strategy Lead. He drives marketing and expansion efforts to make Wheel Adventure the #1 choice in Aligarh.</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <script>
         let bikes = [];
-        let selectedBike = null;
-
         async function init() {
             const res = await fetch('/api/bikes');
             bikes = await res.json();
@@ -84,62 +94,46 @@
         }
 
         function renderSections() {
-            const sections = {
-                scooter: "SCOOTERS",
-                ev: "EV's",
-                motorcycle: "MOTOR BIKES"
-            };
             const container = document.getElementById('sections');
-            container.innerHTML = '';
-
-            for (const [key, label] of Object.entries(sections)) {
-                const categoryBikes = bikes.filter(b => b.cat === key);
-                if (categoryBikes.length === 0) continue;
-
-                container.innerHTML += `<div class="cat-title">${label}</div><div class="grid">${categoryBikes.map(b => {
+            const cats = { scooter: "SCOOTERS", ev: "EV's", motorcycle: "MOTOR BIKES" };
+            container.innerHTML = Object.entries(cats).map(([key, label]) => {
+                const list = bikes.filter(b => b.cat === key);
+                return `<div class="cat-title">${label}</div><div class="grid">${list.map(b => {
                     const available = b.stock - b.rented;
-                    return `
-                        <div class="card">
-                            ${available <= 0 ? '<div class="not-available-label">NOT AVAILABLE</div>' : ''}
-                            <img src="${b.img}" onerror="this.src='https://placehold.co/400x300?text=Bike'">
-                            <div class="p-20">
-                                <h3>${b.name}</h3>
-                                <p style="color:var(--gold)">₹${b.price}/day</p>
-                                <button class="btn" ${available <= 0 ? 'disabled' : ''} onclick="openBooking('${b.name}')">
-                                    ${available > 0 ? 'RENT NOW' : 'OUT OF STOCK'}
-                                </button>
-                            </div>
-                        </div>`;
+                    return `<div class="card">
+                        ${available <= 0 ? '<div style="position:absolute; background:red; padding:5px; font-size:10px;">Not Available</div>' : ''}
+                        <img src="${b.img}">
+                        <div style="padding:15px">
+                            <h3>${b.name}</h3>
+                            <button class="btn" ${available <= 0 ? 'disabled' : ''} onclick="openBook('${b.name}')">RENT</button>
+                        </div>
+                    </div>`;
                 }).join('')}</div>`;
-            }
+            }).join('');
         }
 
-        function openBooking(name) {
-            selectedBike = bikes.find(b => b.name === name);
+        function openBook(name) {
+            const b = bikes.find(x => x.name === name);
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('booking-view').style.display = 'block';
-            document.getElementById('book-name').innerText = selectedBike.name;
-            document.getElementById('book-img').src = selectedBike.img;
-            window.scrollTo(0,0);
+            document.getElementById('book-name').innerText = b.name;
+            document.getElementById('book-img').src = b.img;
         }
-
-        function goBack() { location.reload(); }
 
         function confirmBooking() {
             document.getElementById('loader').style.display = 'flex';
             setTimeout(async () => {
-                const res = await fetch('/api/book', {
+                await fetch('/api/book', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        bikeName: selectedBike.name,
+                        bikeName: document.getElementById('book-name').innerText,
                         customerName: document.getElementById('cust-name').value,
                         phone: document.getElementById('cust-phone').value,
                         days: document.getElementById('rent-days').value
                     })
                 });
-                document.getElementById('loader').style.display = 'none';
-                if(res.ok) document.getElementById('success-modal').style.display = 'flex';
+                location.reload();
             }, 4000);
         }
         init();
