@@ -57,16 +57,29 @@
         }
         function openBooking(n) { selectedBike = n; document.getElementById('home').style.display='none'; document.getElementById('booking').style.display='block'; document.getElementById('sel-name').innerText=n; }
        async function confirmBooking() {
-    console.log("Button clicked, starting fetch...");
-    const res = await fetch('/api/book', { // Use a relative path, NO localhost
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bikeName: selectedBike })
-    });
+    console.log("Attempting to book: " + selectedBike);
     
-    const result = await res.json();
-    if (result.success) {
-        // Show success modal...
+    try {
+        const res = await fetch('/api/book', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bikeName: selectedBike })
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            alert("SERVER ERROR: " + res.status + " - " + errorText);
+            return;
+        }
+
+        const result = await res.json();
+        if (result.success) {
+            document.getElementById('modal-content').innerHTML = `<h2>SUCCESS!</h2><p>Check Telegram.</p>`;
+            document.getElementById('modal').style.display = 'flex';
+        }
+    } catch (err) {
+        alert("NETWORK ERROR: Could not reach the server. Check if the URL is correct!");
+        console.error(err);
     }
 }
         load();
