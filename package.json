@@ -1,7 +1,6 @@
 {
   "name": "wheel-adventure",
   "version": "1.0.0",
-  "description": "Premium Bike Rental Platform - Aligarh Hub",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

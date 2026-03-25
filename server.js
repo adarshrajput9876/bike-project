@@ -1,56 +1,93 @@
 const express = require('express');
-const cors = require('cors');
+const https = require('https'); 
 const fs = require('fs');
 const path = require('path');
-const https = require('https'); 
+const cors = require('cors');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// VERIFIED CREDENTIALS
-const TG_TOKEN = "8616007843:AAE1Q_LJ-ELpvhZLHDBdYvuAxbBJu_T5Hi4"; 
-const TG_CHAT_ID = "5598413859";
+// YOUR DISCORD WEBHOOK
+const DISCORD_URL = "https://discord.com/api/webhooks/1486393518623690903/_ZxGaOR9yc63ECcOBZVkqznkIyxnBYyZEowlyNGV1dHcw2rMDyP2QI5juQXGpJIHaXFe";
 
-function sendTelegram(message) {
-    const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
-    https.get(url, (res) => {
-        console.log(">>> TELEGRAM API CALLED. STATUS:", res.statusCode);
+function sendDiscord(message) {
+    const data = JSON.stringify({ content: message });
+    const urlParts = new URL(DISCORD_URL);
+    
+    const options = {
+        hostname: urlParts.hostname,
+        path: urlParts.pathname,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length,
+        },
+    };
+
+    const req = https.request(options, (res) => {
+        console.log(`>>> Discord Notification Status: ${res.statusCode}`);
     });
+
+    req.on('error', (e) => console.error(">>> Discord Error:", e.message));
+    req.write(data);
+    req.end();
 }
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// LOG EVERY REQUEST
+const BIKES_FILE = path.join(__dirname, 'bikes.json');
+
+// LOG EVERY REQUEST FOR DEBUGGING
 app.use((req, res, next) => {
-    console.log(`>>> NEW REQUEST: ${req.method} ${req.url}`);
+    console.log(`>>> Incoming Request: ${req.method} ${req.url}`);
     next();
 });
 
-const BIKES_FILE = path.join(__dirname, 'bikes.json');
-
 app.post('/api/book', (req, res) => {
     const { bikeName } = req.body;
-    console.log(">>> BOOKING TRIGGERED FOR:", bikeName);
-    
-    // We send 200 immediately to verify connection
-    sendTelegram(`🚀 <b>ALIGARH HUB:</b> Someone clicked book for ${bikeName}`);
-    res.status(200).json({ success: true, debug: "Server received request" });
+    console.log(`>>> BOOKING TRIGGERED: ${bikeName}`);
+
+    try {
+        const fleet = JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8'));
+        const bike = fleet.find(b => b.name.trim().toLowerCase() === bikeName.trim().toLowerCase());
+
+        if (bike && (bike.stock - bike.rented) > 0) {
+            bike.rented += 1;
+            fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
+
+            sendDiscord(`🚀 **NEW BOOKING AT ALIGARH HUB**\n\n**Bike:** ${bike.name}\n**Status:** Confirmed\n*Prepare for customer pickup.*`);
+
+            return res.json({ success: true });
+        }
+        res.status(400).json({ success: false, message: "Out of stock or invalid bike" });
+    } catch (err) {
+        console.error(">>> Internal Server Error:", err);
+        res.status(500).json({ success: false });
+    }
 });
 
 app.get('/api/bikes', (req, res) => {
-    const data = JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8'));
-    res.json(data);
+    res.json(JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8')));
 });
+
+app.post('/api/admin/reset', (req, res) => {
+    const { pin, bikeId, resetAll } = req.body;
+    if (pin !== "1234") return res.status(401).json({ success: false });
+    let fleet = JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8'));
+    if (resetAll) fleet.forEach(b => b.rented = 0);
+    else { const bike = fleet.find(b => b.id === bikeId); if (bike) bike.rented = 0; }
+    fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
+    res.json({ success: true });
+});
+
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 app.listen(PORT, () => {
-    console.log("*****************************************");
-    console.log(`WHEEL ADVENTURE DEPLOYED ON PORT ${PORT}`);
-    console.log("*****************************************");
+    console.log(`************************************`);
+    console.log(`WHEEL ADVENTURE LIVE ON PORT ${PORT}`);
+    console.log(`************************************`);
+    sendDiscord("✅ **SYSTEM RESTART:** The Aligarh Hub server is now monitoring for bookings.");
 });
-
-// HEARTBEAT LOG: Every 30 seconds, print to logs so we know they work
-setInterval(() => {
-    console.log(">>> SERVER HEARTBEAT: I am still alive and waiting for bookings...");
-}, 30000);
