@@ -6,19 +6,24 @@ const https = require('https');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const ADMIN_PIN = "1234"; 
 
-// --- VERIFIED TELEGRAM CREDENTIALS ---
+// --- VERIFIED CREDENTIALS ---
 const TG_TOKEN = "8616007843:AAE1Q_LJ-ELpvhZLHDBdYvuAxbBJu_T5Hi4"; 
-const TG_CHAT_ID = "5598413859"; // Confirmed from your JSON output
+const TG_CHAT_ID = "5598413859";
 
+// Robust Notification Function with extra logging
 function sendTelegram(message) {
+    console.log("Attempting to send Telegram message...");
     const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(message)}&parse_mode=HTML`;
     
     https.get(url, (res) => {
-        console.log('Telegram Status:', res.statusCode);
+        let data = '';
+        res.on('data', (chunk) => { data += chunk; });
+        res.on('end', () => {
+            console.log("Telegram API Response:", data); // THIS WILL SHOW THE ERROR IN RENDER LOGS
+        });
     }).on('error', (e) => {
-        console.error('Telegram Notify Error:', e.message);
+        console.error('Telegram Connection Error:', e.message);
     });
 }
 
@@ -30,9 +35,11 @@ const BIKES_FILE = path.join(__dirname, 'bikes.json');
 const getFleet = () => JSON.parse(fs.readFileSync(BIKES_FILE, 'utf8'));
 const saveFleet = (data) => fs.writeFileSync(BIKES_FILE, JSON.stringify(data, null, 2));
 
-// --- BOOKING ROUTE ---
+// --- THE CRITICAL BOOKING ROUTE ---
 app.post('/api/book', (req, res) => {
     const { bikeName } = req.body;
+    console.log(`Booking request received for: ${bikeName}`); // Check if this shows in logs!
+
     let fleet = getFleet();
     const bike = fleet.find(b => b.name === bikeName);
 
@@ -40,26 +47,19 @@ app.post('/api/book', (req, res) => {
         bike.rented = (bike.rented || 0) + 1;
         saveFleet(fleet);
 
-        // SEND NOTIFICATION
-        sendTelegram(`🚀 <b>WHEEL ADVENTURE: NEW BOOKING!</b>\n\nSomeone just reserved the <b>${bikeName}</b>.\n📍 Hub: Aligarh`);
+        // TRIGGER NOTIFICATION
+        console.log(`Found ${bikeName} in inventory. Sending notification...`);
+        sendTelegram(`🚀 <b>WHEEL ADVENTURE: NEW BOOKING!</b>\n\nBike: <b>${bikeName}</b>\n📍 Hub: Aligarh`);
 
         return res.json({ success: true });
+    } else {
+        console.log(`Booking failed: ${bikeName} not found or out of stock.`);
+        res.status(400).json({ success: false });
     }
-    res.status(400).json({ success: false });
 });
 
-// Admin and Static Routes
 app.get('/api/bikes', (req, res) => res.json(getFleet()));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-app.post('/api/admin/reset', (req, res) => {
-    const { pin, bikeId, resetAll } = req.body;
-    if (pin !== ADMIN_PIN) return res.status(401).json({ success: false });
-    let fleet = getFleet();
-    if (resetAll) fleet.forEach(b => b.rented = 0);
-    else { const bike = fleet.find(b => b.id === bikeId); if (bike) bike.rented = 0; }
-    saveFleet(fleet);
-    res.json({ success: true });
-});
 
-app.listen(PORT, () => console.log(`Wheel Adventure Live | Notifications active for ID ${TG_CHAT_ID}`));
+app.listen(PORT, () => console.log(`Wheel Adventure Engine Started on Port ${PORT}`));
