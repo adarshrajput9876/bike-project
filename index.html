@@ -5,25 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheel Adventure | Aligarh Hub</title>
     <style>
-        :root { --gold: #D4AF37; --bg: #0a0a0a; --card: #161616; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-        .logo { color: var(--gold); text-align: center; font-size: 2.5rem; margin: 30px 0; letter-spacing: 3px; font-weight: 800; text-transform: uppercase; }
+        :root { --gold: #D4AF37; --bg: #0a0a0a; --surface: #161616; --text: #f8f9fa; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
         
-        .cat-title { border-left: 4px solid var(--gold); padding-left: 15px; margin: 40px 0 20px; font-size: 1.5rem; color: var(--gold); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow: hidden; position: relative; }
-        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid var(--gold); }
-        
-        .btn { background: var(--gold); color: #000; width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; text-transform: uppercase; }
-        .btn-back { background: none; color: var(--gold); border: 1px solid var(--gold); padding: 8px 20px; cursor: pointer; border-radius: 4px; margin-bottom: 20px; display: inline-block; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            position: relative;
+            overflow-x: hidden;
+        }
 
-        .doc-box { background: #111; border: 1px dashed var(--gold); padding: 15px; margin: 20px 0; font-size: 0.85rem; text-align: left; }
+        /* REQUIREMENT 1: Background Image with Blur Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: url('image_0.png'); /* Ensure this image is in your main GitHub folder */
+            background-size: cover;
+            background-position: center;
+            filter: blur(12px); /* Blur effect */
+            opacity: 0.18; /* Darkened overlay effect */
+            z-index: -1;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
         
-        /* Founder Section */
+        /* REQUIREMENT 2: Reposition Site Name to Top Left */
+        nav { 
+            padding: 40px 0; 
+            display: flex;
+            justify-content: flex-start; /* Aligns content (logo) to the left */
+        }
+        .logo { 
+            font-size: 2rem; 
+            color: var(--gold); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            letter-spacing: 3px; 
+            border-left: 5px solid var(--gold);
+            padding-left: 15px;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin: 40px 0; }
+        .card { background: var(--surface); border: 1px solid rgba(212,175,55,0.1); border-radius: 12px; overflow: hidden; transition: 0.3s; position: relative; backdrop-filter: blur(5px); }
+        .card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(212,175,55,0.15); }
+        .card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid var(--gold); }
+        .p-20 { padding: 20px; }
+        .btn { background: var(--gold); color: #000; border: none; padding: 14px; width: 100%; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; text-align: center; text-decoration: none; display: block; }
+        .btn:disabled { background: #333; color: #777; cursor: not-allowed; }
+        
+        .booking-input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: #fff; border-radius: 6px; }
+
         footer { margin-top: 80px; padding: 60px 20px; border-top: 1px solid #333; background: #050505; }
         .founder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .founder-card { text-align: center; padding: 20px; border: 1px solid #222; border-radius: 15px; }
+        .founder-card { text-align: center; padding: 20px; border: 1px solid #222; border-radius: 15px; background: #0a0a0a; }
         .founder-card h4 { color: var(--gold); margin-bottom: 10px; font-size: 1.2rem; }
         .founder-card p { color: #888; font-size: 0.9rem; line-height: 1.5; }
 
@@ -33,39 +69,27 @@
     </style>
 </head>
 <body>
-
     <div id="loader"><div class="spinner"></div></div>
-
     <div class="container">
-        <h1 class="logo">Wheel Adventure</h1>
-
-        <div id="home-view">
-            <div id="sections"></div>
-        </div>
+        <nav><a href="/" class="logo">Wheel Adventure</a></nav>
+        
+        <div id="home-view"><div id="sections"></div></div>
 
         <div id="booking-view" style="display:none; max-width:500px; margin: 0 auto; text-align: center;">
-            <div class="btn-back" onclick="location.reload()">← Back</div>
-            <div style="background:var(--card); padding:30px; border-radius:20px; border:1px solid var(--gold);">
-                <img id="book-img" src="" style="width:100%; border-radius:10px; margin-bottom:15px;">
-                <h2 id="book-name" style="color:var(--gold)"></h2>
-                
-                <input type="text" id="cust-name" placeholder="Name" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
-                <input type="text" id="cust-phone" placeholder="Phone Number" style="width:100%; padding:12px; margin-bottom:10px; background:#222; border:1px solid #444; color:#fff;">
-                <select id="rent-days" style="width:100%; padding:12px; background:#222; border:1px solid #444; color:#fff;">
+            <div style="background:var(--surface); padding:30px; border-radius:20px; border:1px solid var(--gold); margin-bottom:20px;">
+                <img id="book-img" src="" style="width:100%; border-radius:10px; margin-bottom:15px; border:1px solid var(--gold);">
+                <h2 id="book-name" style="color:var(--gold); margin-bottom:20px;"></h2>
+                <input type="text" id="cust-name" placeholder="Customer Name" class="booking-input">
+                <input type="text" id="cust-phone" placeholder="Phone Number" class="booking-input">
+                <select id="rent-days" class="booking-input">
                     <option value="1">1 Day</option><option value="2">2 Days</option>
                 </select>
-
-                <div class="doc-box">
-                    <strong>REQUIRED DOCUMENTS:</strong><br><br>
-                    Indian: Driving License + Aadhar Card/PAN Card<br>
-                    Non-Indian: International Driving Permit + Passport Photocopy
-                </div>
-
                 <button class="btn" onclick="confirmBooking()">CONFIRM NOW</button>
             </div>
+            <div style="cursor:pointer; color:var(--gold); margin-bottom:20px;" onclick="location.reload()">← Back</div>
         </div>
 
-        <footer>
+        <footer id="main-footer">
             <div class="founder-grid">
                 <div class="founder-card">
                     <h4>Adarsh Verma</h4>
@@ -82,6 +106,7 @@
                     <p>Business Growth & Strategy Lead. He drives marketing and expansion efforts to make Wheel Adventure the #1 choice in Aligarh.</p>
                 </div>
             </div>
+            <div style="text-align:center; margin-top:40px; color:#555; font-size:0.8rem;">© 2026 Wheel Adventure.</div>
         </footer>
     </div>
 
@@ -98,17 +123,17 @@
             const cats = { scooter: "SCOOTERS", ev: "EV's", motorcycle: "MOTOR BIKES" };
             container.innerHTML = Object.entries(cats).map(([key, label]) => {
                 const list = bikes.filter(b => b.cat === key);
-                return `<div class="cat-title">${label}</div><div class="grid">${list.map(b => {
+                return `<div class="container"><div style="border-left:4px solid var(--gold); padding-left:15px; color:var(--gold); margin:40px 0 20px; font-size:1.5rem;">${label}</div><div class="grid">${list.map(b => {
                     const available = b.stock - b.rented;
                     return `<div class="card">
-                        ${available <= 0 ? '<div style="position:absolute; background:red; padding:5px; font-size:10px;">Not Available</div>' : ''}
-                        <img src="${b.img}">
+                        ${available <= 0 ? '<div style="position:absolute; background:red; color:white; padding:5px 10px; font-weight:bold; font-size:12px; top:10px; right:10px; border-radius:4px;">Not Available</div>' : ''}
+                        <img src="${b.img}" onerror="this.src='https://placehold.co/400x300?text=Bike'">
                         <div style="padding:15px">
-                            <h3>${b.name}</h3>
-                            <button class="btn" ${available <= 0 ? 'disabled' : ''} onclick="openBook('${b.name}')">RENT</button>
+                            <h3 style="margin-bottom:10px;">${b.name}</h3>
+                            <button class="btn" ${available <= 0 ? 'disabled' : ''} onclick="openBook('${b.name}')">RENT NOW</button>
                         </div>
                     </div>`;
-                }).join('')}</div>`;
+                }).join('')}</div></div>`;
             }).join('');
         }
 
@@ -118,6 +143,11 @@
             document.getElementById('booking-view').style.display = 'block';
             document.getElementById('book-name').innerText = b.name;
             document.getElementById('book-img').src = b.img;
+            
+            // Requirement 3: Hide founder details when reservation page is opened
+            document.getElementById('main-footer').style.display = 'none';
+            
+            window.scrollTo(0,0);
         }
 
         function confirmBooking() {
@@ -133,7 +163,7 @@
                         days: document.getElementById('rent-days').value
                     })
                 });
-                location.reload();
+                location.reload(); // Resets page, shows footer again
             }, 4000);
         }
         init();
