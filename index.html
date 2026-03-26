@@ -6,7 +6,7 @@
     <title>Wheel Adventure | Aligarh Hub</title>
     <style>
         :root { --primary: #2c5530; --gold: #D4AF37; --bg: #f5f5f5; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; scroll-behavior: smooth; }
         
         body::before {
             content: ""; position: fixed; inset: 0;
@@ -20,16 +20,46 @@
         
         .btn { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.95rem; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1e3b21; }
 
-        .bikes-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; padding: 0 5%; }
+        /* NEW: Main Page "Hero" Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+            color: white;
+            text-align: center;
+            padding: 80px 5%;
+            border-bottom: 5px solid var(--gold);
+            margin-bottom: 20px;
+        }
+        .hero h1 { font-size: 2.8rem; color: var(--gold); margin-bottom: 15px; letter-spacing: 1px; }
+        .hero p { font-size: 1.1rem; max-width: 700px; margin: 0 auto 25px auto; line-height: 1.6; }
+
+        /* NEW: Features Section (RenTrip Style) */
+        .features-section { padding: 40px 5%; text-align: center; }
+        .features-section h2 { color: var(--primary); font-size: 2rem; margin-bottom: 30px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+        .feat-card { background: white; padding: 25px 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .feat-card:hover { transform: translateY(-5px); }
+        .feat-icon { font-size: 3rem; margin-bottom: 15px; }
+        .feat-card h3 { color: var(--primary); margin-bottom: 8px; font-size: 1.2rem; }
+        .feat-card p { font-size: 0.9rem; color: #666; line-height: 1.4; }
+
+        /* NEW: How to Use Section */
+        .how-it-works { padding: 50px 5%; text-align: center; background: rgba(255,255,255,0.9); margin: 40px 0; border-top: 2px solid var(--gold); border-bottom: 2px solid var(--gold); }
+        .how-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; }
+        .how-step { max-width: 220px; }
+        .how-icon { font-size: 3.5rem; color: var(--gold); margin-bottom: 15px; }
+
+        /* MODIFIED: Catalog Grid (Width increased by 15%) */
+        .bikes-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 25px; padding: 0 2%; } /* Reduced padding to stretch wider */
         @media (min-width: 992px) { .bikes-grid { grid-template-columns: repeat(3, 1fr); } }
 
-        .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transform: scale(0.9); transition: 0.3s; }
-        .bike-card:hover { transform: scale(0.95); }
-        .bike-image { height: 180px; background-size: cover; background-position: center; border-bottom: 2px solid var(--gold); }
-        .bike-info { padding: 15px; text-align: center; }
+        .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transform: scale(1.035); transition: 0.3s; margin: 10px; } /* Scale increased perfectly by 15% from old size */
+        .bike-card:hover { transform: scale(1.06); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .bike-image { height: 220px; background-size: cover; background-position: center; border-bottom: 3px solid var(--gold); }
+        .bike-info { padding: 18px; text-align: center; }
 
-        /* Restored Bike Details Page Style */
+        /* Bike Details Page Style */
         .details-page { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .details-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px; }
         @media (min-width: 768px) { .details-grid { grid-template-columns: 1fr 1fr; } }
@@ -38,13 +68,13 @@
         .feat-list li { margin-bottom: 10px; padding-left: 25px; position: relative; font-size: 0.95rem; color: #555; }
         .feat-list li::before { content: '✓'; color: var(--gold); position: absolute; left: 0; font-weight: bold; }
 
-        /* Loader Background updated to 67A3C2 */
+        /* Loader Background (67A3C2) */
         #loader { position: fixed; inset: 0; background: rgba(103, 163, 194, 0.95); display: none; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
         .spinner { width: 50px; height: 50px; border: 5px solid #fff; border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 400px; text-align: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; text-align: center; }
 
         footer { background: var(--primary); color: white; padding: 40px 5%; margin-top: 60px; }
         .founder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center; font-size: 0.85rem; }
@@ -66,7 +96,35 @@
         </div>
     </header>
 
-    <div id="home-view"><div id="sections"></div></div>
+    <div id="home-view">
+        <div class="hero">
+            <h1>Explore Aligarh on Two Wheels</h1>
+            <p>Rent high-quality bicycles, scooters, and motorbikes at the most affordable prices. Perfect for commuting, college trips, or weekend adventures in the city.</p>
+            <button class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 30px; border: 2px solid var(--gold);" onclick="document.getElementById('sections').scrollIntoView()">Browse Our Fleet</button>
+        </div>
+
+        <div class="features-section">
+            <h2>Why Choose Wheel Adventure?</h2>
+            <div class="features-grid">
+                <div class="feat-card"><div class="feat-icon">🛣️</div><h3>No Riding Limits</h3><p>The odometer won't scare you anymore. A day rent simply means 24 hours.</p></div>
+                <div class="feat-card"><div class="feat-icon">🛡️</div><h3>Secure Payments</h3><p>Our payment system is secure, requiring a low 20% deposit verified by admin.</p></div>
+                <div class="feat-card"><div class="feat-icon">✅</div><h3>Verified Hub</h3><p>Aligarh's most trusted team committed to high-quality vehicle maintenance.</p></div>
+                <div class="feat-card"><div class="feat-icon">💸</div><h3>100% Moneyback</h3><p>Not happy with the service? Let us know and take your money back.</p></div>
+            </div>
+        </div>
+
+        <div class="how-it-works">
+            <h2 style="color:var(--primary); font-size: 2rem;">HOW TO USE?</h2>
+            <div class="how-grid">
+                <div class="how-step"><div class="how-icon">🏍️</div><h3 style="color:var(--primary); margin-bottom:5px;">1. Select Your Bike</h3><p style="font-size:0.9rem; color:#666;">Search and select a bike from our wide range in the catalog below.</p></div>
+                <div class="how-step"><div class="how-icon">📝</div><h3 style="color:var(--primary); margin-bottom:5px;">2. Send Request</h3><p style="font-size:0.9rem; color:#666;">Provide your details and pay a secure 20% advance deposit via UPI.</p></div>
+                <div class="how-step"><div class="how-icon">📍</div><h3 style="color:var(--primary); margin-bottom:5px;">3. Pick Your Bike</h3><p style="font-size:0.9rem; color:#666;">Once the Admin verifies your UTR, visit the Hub to pick up your ride.</p></div>
+                <div class="how-step"><div class="how-icon">🗺️</div><h3 style="color:var(--primary); margin-bottom:5px;">4. Ride Anywhere</h3><p style="font-size:0.9rem; color:#666;">Enjoy your journey. We don't limit your kilometers.</p></div>
+            </div>
+        </div>
+
+        <div id="sections" style="padding-top: 20px;"></div>
+    </div>
 
     <div id="details-view" class="details-page">
         <button class="btn" style="background:transparent; color:#888; border:1px solid #ddd;" onclick="navigate('home')">← Back to Fleet</button>
@@ -162,18 +220,17 @@
             const cats = { scooter: "SCOOTERS", ev: "EV's", motorcycle: "MOTOR BIKES" };
             container.innerHTML = Object.entries(cats).map(([key, label]) => {
                 const list = bikes.filter(b => b.cat === key);
-                return `<div style="padding:0 5%; margin:30px 0 10px; color:var(--primary); font-size:1.2rem; border-left:4px solid var(--gold); padding-left:15px;">${label}</div><div class="bikes-grid">${list.map(b => `
+                return `<div style="padding:0 5%; margin:40px 0 15px; color:var(--primary); font-size:1.8rem; font-weight:bold; border-bottom:2px solid var(--gold); display:inline-block;">${label}</div><div class="bikes-grid">${list.map(b => `
                     <div class="bike-card" onclick="openDetails('${b.name}')">
                         <div class="bike-image" style="background-image: url('${b.img}')"></div>
                         <div class="bike-info">
-                            <h3 style="color:var(--primary)">${b.name}</h3>
+                            <h3 style="color:var(--primary); font-size:1.2rem;">${b.name}</h3>
                             <div style="color:var(--gold); font-weight:bold; font-size:1.1rem; margin-top:5px;">₹${b.price}/day</div>
                         </div>
                     </div>`).join('')}</div>`;
             }).join('');
         }
 
-        // Details View Logic
         function openDetails(name) {
             selectedBike = bikes.find(b => b.name === name);
             document.getElementById('detail-img').src = selectedBike.img;
@@ -184,9 +241,8 @@
             document.getElementById('detail-avail').innerText = isAvail ? 'Available in Aligarh Hub' : 'Currently Out of Stock';
             document.getElementById('detail-avail').style.color = isAvail ? 'green' : 'red';
             
-            // Dynamic text processing
             document.getElementById('detail-desc').innerText = selectedBike.desc || `The ${name} offers the perfect balance of comfort, mileage, and performance. Ideal for navigating the streets of Aligarh, it provides a highly reliable engine for both daily commutes and quick weekend trips.`;
-            let feats = selectedBike.features || ["Well-maintained engine", "Comfortable seating for two", "Excellent fuel economy", "Instant self-start functionality"];
+            let feats = selectedBike.features || ["Well-maintained engine & brakes", "Comfortable seating for two", "Excellent fuel economy", "Instant self-start functionality"];
             document.getElementById('detail-features').innerHTML = feats.map(f => `<li>${f}</li>`).join('');
             
             navigate('details');
@@ -225,7 +281,7 @@
                         bikeName: selectedBike.name,
                         customerName: document.getElementById('cust-name').value, 
                         phone: document.getElementById('cust-phone').value,
-                        email: document.getElementById('cust-email').value, // Optional
+                        email: document.getElementById('cust-email').value, 
                         days: document.getElementById('rent-days').value,
                         transactionId: utr
                     })
