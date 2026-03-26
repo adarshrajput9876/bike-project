@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Administrator Hub | Wheel Adventure</title>
     <style>
-        /* Admin Page Colors updated to #C0BDCE */
         :root { 
             --primary: #2c5530; 
             --gold: #D4AF37; 
@@ -88,6 +87,28 @@
         .btn-action { padding: 8px 15px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 0.75rem; margin-left: 5px; }
         .btn-approve { background: #2ecc71; color: #fff; }
         .btn-reject { background: #e74c3c; color: #fff; }
+
+        /* Dashboard Bullet Points */
+        .dash-bullet {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .dash-bullet:hover {
+            transform: translateX(10px);
+            border-left: 5px solid var(--gold);
+        }
     </style>
 </head>
 <body>
@@ -100,11 +121,36 @@
 
     <div id="admin-dash">
         <div class="tabs">
-            <button id="t-req" class="tab-btn active" onclick="showTab('requests')">REQUEST FOR BIKES</button>
-            <button id="t-hist" class="tab-btn" onclick="showTab('history')">RESERVED HISTORY</button>
+            <button id="t-hom" class="tab-btn active" onclick="showTab('home')">HOME</button>
+            <button id="t-req" class="tab-btn" onclick="showTab('requests')">REQUEST FOR BIKES</button>
+            <button id="t-his" class="tab-btn" onclick="showTab('history')">RESERVED HISTORY</button>
             <button id="t-inv" class="tab-btn" onclick="showTab('inventory')">INVENTORY</button>
         </div>
-        <div id="request-sec" class="content"></div>
+
+        <div id="home-sec" class="content" style="display:block;">
+            <h1 style="color:var(--primary); margin-bottom: 10px;">Welcome Admin!</h1>
+            <p style="color:#666; margin-bottom: 30px; font-size:1.1rem;">Please select an operation from the list below to manage the Aligarh Hub:</p>
+            
+            <ul style="list-style-type: none; padding: 0;">
+                <li>
+                    <button class="dash-bullet" onclick="showTab('requests')">
+                        👉 Review & Manage Bike Requests (Verify UTR)
+                    </button>
+                </li>
+                <li>
+                    <button class="dash-bullet" onclick="showTab('history')">
+                        👉 View Reserved Booking History
+                    </button>
+                </li>
+                <li>
+                    <button class="dash-bullet" onclick="showTab('inventory')">
+                        👉 Manage Fleet Inventory & Mark as Returned
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div id="requests-sec" class="content" style="display:none;"></div>
         <div id="history-sec" class="content" style="display:none;"></div>
         <div id="inventory-sec" class="content" style="display:none;"></div>
     </div>
@@ -114,6 +160,7 @@
             if(document.getElementById('pin').value === "22224444") { 
                 document.getElementById('auth-gateway').style.display='none'; 
                 document.getElementById('admin-dash').style.display='flex'; 
+                showTab('home');
                 loadAll(); 
             } 
         }
@@ -128,7 +175,7 @@
         async function loadAll() {
             // 1. Load Requests
             const rRes = await fetch('/api/admin/requests'); const reqs = await rRes.json();
-            document.getElementById('request-sec').innerHTML = reqs.map(r => `
+            document.getElementById('requests-sec').innerHTML = reqs.map(r => `
                 <div class="row">
                     <div>
                         <b style="color:var(--primary); font-size:1.1rem;">${r.bikeName}</b><br>
