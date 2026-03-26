@@ -34,7 +34,6 @@ function sendDiscord(message) {
 app.use(cors());
 app.use(express.json());
 
-// FIX: Explicitly define the admin route BEFORE static files to guarantee it opens
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
@@ -43,7 +42,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Serve static files (like images or CSS) after explicit routes
 app.use(express.static(__dirname));
 
 // --- AUTH ---
@@ -68,21 +66,21 @@ app.post('/api/login', (req, res) => {
 app.get('/api/bikes', (req, res) => res.json(JSON.parse(fs.readFileSync(BIKES_FILE))));
 
 app.post('/api/request-booking', (req, res) => {
-    const { bikeName, customerName, phone, days, transactionId } = req.body;
+    // Added 'email' to payload extraction
+    const { bikeName, customerName, phone, email, days, transactionId } = req.body;
     
-    // Check if UTR is valid (at least 10 characters)
     if (!transactionId || transactionId.length < 10) return res.status(400).json({ success: false, message: "Invalid UTR" });
 
     let requests = JSON.parse(fs.readFileSync(REQUESTS_FILE));
     const newRequest = {
-        id: Date.now(), bikeName, customerName, phone, days, transactionId,
+        id: Date.now(), bikeName, customerName, phone, email, days, transactionId,
         date: new Date().toLocaleString()
     };
     
     requests.push(newRequest);
     fs.writeFileSync(REQUESTS_FILE, JSON.stringify(requests, null, 2));
 
-    sendDiscord(`🎫 **NEW REQUEST FOR BIKE**\n**UTR:** ${transactionId}\n**Customer:** ${customerName}\n**Bike:** ${bikeName}\n*Check Admin Panel to Reserve.*`);
+    sendDiscord(`🎫 **NEW REQUEST FOR BIKE**\n**UTR:** ${transactionId}\n**Customer:** ${customerName}\n**Email:** ${email || "Not Provided"}\n**Bike:** ${bikeName}\n*Check Admin Panel to Reserve.*`);
     res.json({ success: true });
 });
 
@@ -102,10 +100,10 @@ app.post('/api/admin/approve', (req, res) => {
     const bike = fleet.find(b => b.name === booking.bikeName);
 
     if (bike && (bike.stock - bike.rented) > 0) {
-        bike.rented += 1; // Update availability
+        bike.rented += 1; 
         booking.status = "Reserved Manually";
         history.push(booking);
-        requests.splice(reqIdx, 1); // Remove from pending
+        requests.splice(reqIdx, 1); 
 
         fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
         fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
