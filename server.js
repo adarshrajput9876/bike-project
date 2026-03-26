@@ -8,6 +8,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DISCORD_URL = "https://discord.com/api/webhooks/1486393518623690903/_ZxGaOR9yc63ECcOBZVkqznkIyxnBYyZEowlyNGV1dHcw2rMDyP2QI5juQXGpJIHaXFe";
 
+// Database Files
+const BIKES_FILE = path.join(__dirname, 'bikes.json');
+const HISTORY_FILE = path.join(__dirname, 'history.json');
+const USERS_FILE = path.join(__dirname, 'users.json');
+
+// Initialize Storage
+if (!fs.existsSync(HISTORY_FILE)) fs.writeFileSync(HISTORY_FILE, JSON.stringify([]));
+if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, JSON.stringify([]));
+
 function sendDiscord(message) {
     const data = JSON.stringify({ content: message });
     const urlParts = new URL(DISCORD_URL);
@@ -24,58 +33,60 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const BIKES_FILE = path.join(__dirname, 'bikes.json');
-const HISTORY_FILE = path.join(__dirname, 'history.json');
-
-if (!fs.existsSync(HISTORY_FILE)) fs.writeFileSync(HISTORY_FILE, JSON.stringify([]));
-
-// --- API ROUTES ---
-
-app.get('/api/bikes', (req, res) => res.json(JSON.parse(fs.readFileSync(BIKES_FILE))));
-
-app.post('/api/book', (req, res) => {
-    const { bikeName, customerName, phone, days } = req.body;
-    let fleet = JSON.parse(fs.readFileSync(BIKES_FILE));
-    let history = JSON.parse(fs.readFileSync(HISTORY_FILE));
-    
-    const bike = fleet.find(b => b.name === bikeName);
-    if (bike && (bike.stock - bike.rented) > 0) {
-        bike.rented += 1;
-        const total = (bike.price + 50) * days;
-        const newBooking = {
-            id: Date.now(), bikeName, customerName, phone, days,
-            totalPrice: total, status: "Reserved (Pending)", date: new Date().toLocaleString()
-        };
-        history.push(newBooking);
-        fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
-        fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
-        sendDiscord(`🚀 **NEW BOOKING**\n**Customer:** ${customerName}\n**Bike:** ${bikeName}\n**Phone:** ${phone}`);
-        return res.json({ success: true });
-    }
-    res.status(400).json({ success: false });
-});
-
-// Admin History & Delete
-app.get('/api/admin/history', (req, res) => res.json(JSON.parse(fs.readFileSync(HISTORY_FILE))));
-
-app.delete('/api/admin/history/:id', (req, res) => {
-    let history = JSON.parse(fs.readFileSync(HISTORY_FILE));
-    history = history.filter(h => h.id !== parseInt(req.params.id));
-    fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+// --- AUTHENTICATION ---
+app.post('/api/signup', (req, res) => {
+    const { name, email, password } = req.body;
+    let users = JSON.parse(fs.readFileSync(USERS_FILE));
+    if (users.find(u => u.email === email)) return res.status(400).json({ success: false, message: "User already exists" });
+    users.push({ name, email, password });
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
     res.json({ success: true });
 });
 
-// Admin Inventory Control
-app.post('/api/admin/reset-bike', (req, res) => {
-    const { bikeId } = req.body;
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    const users = JSON.parse(fs.readFileSync(USERS_FILE));
+    const user = users.find(u => u.email === email && u.password === password);
+    if (user) return res.json({ success: true, name: user.name });
+    res.status(401).json({ success: false });
+});
+
+// --- BOOKING & PAYMENTS ---
+app.get('/api/bikes', (req, res) => res.json(JSON.parse(fs.readFileSync(BIKES_FILE))));
+
+app.post('/api/book', (req, res) => {
+    const { bikeName, customerName, phone, days, transactionId } = req.body;
+    if (!transactionId || transactionId.length < 10) return res.status(400).json({ success: false });
+
     let fleet = JSON.parse(fs.readFileSync(BIKES_FILE));
-    const bike = fleet.find(b => b.id === bikeId);
-    if (bike) {
-        bike.rented = 0;
+    let history = JSON.parse(fs.readFileSync(HISTORY_FILE));
+    const bike = fleet.find(b => b.name === bikeName);
+
+    if (bike && (bike.stock - bike.rented) > 0) {
+        bike.rented += 1;
+        const total = (bike.price + 50) * days;
+        const deposit = (total * 0.20).toFixed(2);
+        
+        history.push({ 
+            id: Date.now(), bikeName, customerName, phone, days, 
+            totalPrice: total, depositPaid: deposit, transactionId, 
+            status: "Success (Verifying)", date: new Date().toLocaleString() 
+        });
+        
         fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2));
-        return res.json({ success: true });
-    }
-    res.status(404).json({ success: false });
+        fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+
+        sendDiscord(`🚨 **ALIGARH HUB: PAYMENT RECEIVED**\n**UTR:** ${transactionId}\n**Deposit:** ₹${deposit}\n**Customer:** ${customerName}\n**Vehicle:** ${bikeName}`);
+        res.json({ success: true });
+    } else res.status(400).json({ success: false });
+});
+
+// --- ADMIN ---
+app.get('/api/admin/history', (req, res) => res.json(JSON.parse(fs.readFileSync(HISTORY_FILE))));
+app.delete('/api/admin/history/:id', (req, res) => {
+    let h = JSON.parse(fs.readFileSync(HISTORY_FILE)).filter(x => x.id !== parseInt(req.params.id));
+    fs.writeFileSync(HISTORY_FILE, JSON.stringify(h, null, 2));
+    res.json({ success: true });
 });
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
