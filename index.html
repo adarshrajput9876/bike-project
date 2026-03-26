@@ -50,13 +50,16 @@
         .how-step { max-width: 220px; }
         .how-icon { font-size: 3.5rem; color: var(--gold); margin-bottom: 15px; }
 
-        /* MODIFIED: Catalog Grid (Length and Scale Decreased) */
+        /* Catalog Grid */
         .bikes-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; padding: 0 5%; } 
         @media (min-width: 992px) { .bikes-grid { grid-template-columns: repeat(3, 1fr); } }
 
         .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transform: scale(0.9); transition: 0.3s; margin: auto; width: 100%; } 
         .bike-card:hover { transform: scale(0.95); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .bike-image { height: 160px; background-size: cover; background-position: center; border-bottom: 3px solid var(--gold); }
+        
+        /* ADJUSTED: Image size and object-fit updated to "contain" so the full bike is always clearly visible without getting cut off */
+        .bike-image { height: 220px; background-size: contain; background-repeat: no-repeat; background-position: center; border-bottom: 3px solid var(--gold); background-color: #ffffff; padding: 10px; }
+        
         .bike-info { padding: 15px; text-align: center; }
 
         /* Bike Details Page Style */
@@ -77,7 +80,10 @@
         .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; text-align: center; }
 
         footer { background: var(--primary); color: white; padding: 40px 5%; margin-top: 60px; }
-        .founder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center; font-size: 0.85rem; }
+        
+        /* MODIFIED: Founders aligned in a column */
+        .founder-column { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+        .founder-card { background: rgba(0, 0, 0, 0.2); padding: 15px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; }
     </style>
 </head>
 <body>
@@ -89,6 +95,7 @@
             <div class="logo" onclick="location.reload()">Wheel<span>Adventure</span></div>
             <div id="auth-section">
                 <button class="btn btn-primary" onclick="openM('loginModal')">Login</button>
+                <button class="btn" style="background:transparent; border:2px solid var(--gold); color:var(--primary); margin-left:10px;" onclick="openM('signupModal')">Sign Up</button>
             </div>
             <div id="user-section" style="display:none; color:var(--primary); font-weight:bold;">
                 <span id="user-display"></span> <button class="btn btn-primary" onclick="logout()" style="margin-left:10px;">Logout</button>
@@ -185,13 +192,45 @@
         </div>
     </div>
 
-    <div id="loginModal" class="modal"><div class="modal-content"><h2 style="color:var(--primary); margin-bottom:15px;">Login</h2><input type="email" id="lEmail" placeholder="Email" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd;"><input type="password" id="lPass" placeholder="Password" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd;"><button class="btn btn-primary" style="width:100%" onclick="doLogin()">Login</button><button class="btn" style="width:100%; margin-top:10px; background:transparent; color:#888; border:1px solid #ddd;" onclick="closeM('loginModal')">Close</button></div></div>
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color:var(--primary); margin-bottom:15px;">Login</h2>
+            <input type="email" id="lEmail" placeholder="Email" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <input type="password" id="lPass" placeholder="Password" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Login</button>
+            <button class="btn" style="width:100%; margin-top:10px; background:transparent; color:#888; border:1px solid #ddd;" onclick="closeM('loginModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color:var(--primary); margin-bottom:15px;">Sign Up</h2>
+            <input type="text" id="sName" placeholder="Full Name" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <input type="email" id="sEmail" placeholder="Email Address" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <input type="password" id="sPass" placeholder="Create Password" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <button class="btn btn-primary" style="width:100%" onclick="doSignup()">Create Account</button>
+            <button class="btn" style="width:100%; margin-top:10px; background:transparent; color:#888; border:1px solid #ddd;" onclick="closeM('signupModal')">Close</button>
+        </div>
+    </div>
 
     <footer id="main-footer">
-        <div class="founder-grid">
-            <div class="founder-card"><h4>Adarsh Verma</h4><p>Lead Developer | 9258395352</p></div>
-            <div class="founder-card"><h4>Himanshu Kumar</h4><p>Operations | 8859905812</p></div>
-            <div class="founder-card"><h4>Girish Kumar</h4><p>Business Strategy</p></div>
+        <h2 style="text-align:center; color:var(--gold); margin-bottom:30px;">Our Executive Team</h2>
+        <div class="founder-column">
+            <div class="founder-card">
+                <h3 style="color:var(--gold); font-size:1.4rem;">Girish Kumar</h3>
+                <p style="font-size:1rem; color:#ddd;">Founder</p>
+                <p style="color:#fff; font-weight:bold; margin-top:5px;">📞 7618192808</p>
+            </div>
+            <div class="founder-card">
+                <h4 style="color:var(--gold); font-size:1.2rem;">Adarsh Verma</h4>
+                <p style="font-size:0.9rem; color:#ddd;">Co-Founder & Lead Developer</p>
+                <p style="color:#fff; font-weight:bold; margin-top:5px;">📞 9258395352</p>
+            </div>
+            <div class="founder-card">
+                <h4 style="color:var(--gold); font-size:1.2rem;">Himanshu Kumar</h4>
+                <p style="font-size:0.9rem; color:#ddd;">Co-Founder & Operations Head</p>
+                <p style="color:#fff; font-weight:bold; margin-top:5px;">📞 8859905812</p>
+            </div>
         </div>
     </footer>
 
@@ -301,13 +340,32 @@
             const u = localStorage.getItem('wheelUser');
             if(u) { const d = JSON.parse(u); document.getElementById('auth-section').style.display='none'; document.getElementById('user-section').style.display='block'; document.getElementById('user-display').innerText=d.name; }
         }
+        
         function logout() { localStorage.removeItem('wheelUser'); location.reload(); }
+        
         async function doLogin() {
             const email = document.getElementById('lEmail').value;
             const password = document.getElementById('lPass').value;
             const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, password})});
             if(res.ok) { const d = await res.json(); localStorage.setItem('wheelUser', JSON.stringify(d)); location.reload(); }
             else { alert("Invalid credentials."); }
+        }
+
+        // ADDED: Sign up function linked to new modal
+        async function doSignup() {
+            const name = document.getElementById('sName').value;
+            const email = document.getElementById('sEmail').value;
+            const password = document.getElementById('sPass').value;
+            if(!name || !email || !password) return alert("Please fill all fields to sign up.");
+            
+            const res = await fetch('/api/signup', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, email, password})});
+            if(res.ok) { 
+                alert("Account Created Successfully! Please login."); 
+                closeM('signupModal'); 
+                openM('loginModal'); 
+            } else { 
+                alert("Email already registered."); 
+            }
         }
         
         function openM(id) { document.getElementById(id).style.display='flex'; }
