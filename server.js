@@ -33,6 +33,17 @@ function sendDiscord(message) {
 
 app.use(cors());
 app.use(express.json());
+
+// FIX: Explicitly define the admin route BEFORE static files to guarantee it opens
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve static files (like images or CSS) after explicit routes
 app.use(express.static(__dirname));
 
 // --- AUTH ---
@@ -53,12 +64,14 @@ app.post('/api/login', (req, res) => {
     res.status(401).json({ success: false });
 });
 
-// --- CLIENT BOOKING REQUEST ---
+// --- CLIENT BOOKING REQUEST (UTR ONLY) ---
 app.get('/api/bikes', (req, res) => res.json(JSON.parse(fs.readFileSync(BIKES_FILE))));
 
 app.post('/api/request-booking', (req, res) => {
     const { bikeName, customerName, phone, days, transactionId } = req.body;
-    if (!transactionId || transactionId.length < 10) return res.status(400).json({ success: false });
+    
+    // Check if UTR is valid (at least 10 characters)
+    if (!transactionId || transactionId.length < 10) return res.status(400).json({ success: false, message: "Invalid UTR" });
 
     let requests = JSON.parse(fs.readFileSync(REQUESTS_FILE));
     const newRequest = {
@@ -117,9 +130,5 @@ app.post('/api/admin/reset-bike', (req, res) => {
     const bike = fleet.find(b => b.id === bikeId);
     if (bike) { bike.rented = 0; fs.writeFileSync(BIKES_FILE, JSON.stringify(fleet, null, 2)); res.json({ success: true }); }
 });
-
-// --- FIX: Explicit Admin Routing ---
-app.get('/admin', (req, res) => res.sendFile(path.resolve(__dirname, 'admin.html')));
-app.get('/', (req, res) => res.sendFile(path.resolve(__dirname, 'index.html')));
 
 app.listen(PORT, () => console.log(`Wheel Adventure Engine Live on ${PORT}`));
