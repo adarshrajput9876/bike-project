@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheel Adventure | Aligarh Hub</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         :root { --primary: #2c5530; --gold: #D4AF37; --bg: #f5f5f5; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -16,107 +15,65 @@
         }
 
         header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; }
-        .logo { font-size: 24px; font-weight: bold; color: var(--primary); border-left: 4px solid var(--gold); padding-left: 10px; cursor: pointer; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; }
+        .logo { font-size: 22px; font-weight: bold; color: var(--primary); border-left: 4px solid var(--gold); padding-left: 10px; cursor: pointer; }
         
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { border: 1px solid var(--primary); background: transparent; color: var(--primary); }
 
-        /* FEATURE 1: 3 Bikes per row on Desktop */
-        .bikes-grid { 
-            display: grid; 
-            grid-template-columns: repeat(1, 1fr); 
-            gap: 30px; 
-            padding: 0 5%; 
-        }
-        @media (min-width: 992px) {
-            .bikes-grid { grid-template-columns: repeat(3, 1fr); }
-        }
+        /* FEATURE: Smaller Catalog */
+        .bikes-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; padding: 0 5%; }
+        @media (min-width: 992px) { .bikes-grid { grid-template-columns: repeat(3, 1fr); } }
 
-        .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; }
-        .bike-image { height: 200px; background-size: cover; background-position: center; border-bottom: 3px solid var(--gold); }
-        .bike-info { padding: 20px; }
-
-        .details-page { max-width: 1100px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; display: none; }
-        .details-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 30px; }
-        .pricing-bar { grid-column: span 3; background: #f8f9fa; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-top: 5px solid #4a7c59; }
+        .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transform: scale(0.9); transition: 0.3s; }
+        .bike-card:hover { transform: scale(0.95); }
+        .bike-image { height: 150px; background-size: cover; background-position: center; border-bottom: 2px solid var(--gold); }
+        .bike-info { padding: 12px; }
+        .bike-info h3 { font-size: 1rem; }
 
         #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; z-index: 5000; flex-direction: column; align-items: center; justify-content: center; }
-        .spinner { width: 60px; height: 60px; border: 6px solid #333; border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 400px; text-align: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 380px; text-align: center; }
 
-        footer { background: var(--primary); color: white; padding: 50px 5%; margin-top: 80px; }
-        .founder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; text-align: center; }
+        footer { background: var(--primary); color: white; padding: 40px 5%; margin-top: 60px; }
+        .founder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="spinner"></div><p style="color:var(--gold); margin-top:20px; font-weight:bold;">LOADING HUB...</p></div>
+    <div id="loader"><div class="spinner"></div><p style="color:var(--gold); margin-top:15px;">SENDING REQUEST...</p></div>
 
     <header>
         <div class="header-container">
             <div class="logo" onclick="location.reload()">Wheel<span>Adventure</span></div>
             <div id="auth-section">
-                <button class="btn btn-outline" onclick="openM('loginModal')">Login</button>
-                <button class="btn btn-primary" style="margin-left:10px;" onclick="openM('signupModal')">Sign Up</button>
+                <button class="btn btn-primary" onclick="openM('loginModal')">Login</button>
             </div>
             <div id="user-section" style="display:none; color:var(--primary); font-weight:bold;">
-                Hello, <span id="user-display"></span>! <button class="btn btn-outline" onclick="logout()" style="margin-left:10px;">Logout</button>
+                <span id="user-display"></span> <button class="btn btn-primary" onclick="logout()">Logout</button>
             </div>
         </div>
     </header>
 
     <div id="home-view"><div id="sections"></div></div>
 
-    <div id="details-view" class="details-page">
-        <button class="btn btn-outline" style="margin-bottom:20px;" onclick="navigate('home')">← Back to Fleet</button>
-        <div class="details-grid">
-            <div style="border:1px solid #eee; padding:20px; border-radius:8px; text-align:center;">
-                <img id="detail-img" src="" style="width:100%; border-radius:8px;">
-            </div>
-            <div style="display:flex; flex-direction:column; gap:15px;">
-                <div style="font-weight:bold; color:var(--primary);">Specs:</div>
-                <p>⚙️ CC: <span id="spec-cc"></span></p>
-                <p>🛣️ Km: <span id="spec-km"></span></p>
-                <p>🏍️ Year: <span id="spec-year"></span></p>
-            </div>
-            <div style="border:1px solid #eee; padding:20px; border-radius:8px; text-align:center;">
-                <h4 id="dealer-name">Adarsh Verma</h4>
-                <p style="font-size:0.8rem; color:#888;">Lead Admin</p>
-            </div>
-            <div class="pricing-bar">
-                <div><small>Daily</small><br><b id="p-day">₹0</b></div>
-                <button class="btn btn-primary" onclick="openM('bookingModal')">Rent Now</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="bookingModal" class="modal">
-        <div class="modal-content">
-            <h2 style="color:var(--primary)">Reserve Bike</h2>
-            <input type="text" id="c-name" placeholder="Name" style="width:100%; padding:12px; margin:10px 0;">
-            <input type="text" id="c-phone" placeholder="Phone" style="width:100%; padding:12px; margin:10px 0;">
-            <button class="btn btn-primary" style="width:100%" onclick="showPay()">Payment</button>
-        </div>
-    </div>
-
     <div id="payModal" class="modal">
         <div class="modal-content">
-            <h3>20% Deposit</h3>
-            <img id="upi-qr" src="" style="width:180px; height:180px; margin:15px 0;">
-            <input type="text" id="utr" placeholder="12-digit UTR" style="width:100%; padding:12px; margin-bottom:10px;">
-            <input type="file" id="screenshot" accept="image/*" onchange="autoScan()">
-            <div id="scan-status" style="font-size:0.8rem; margin:10px 0;"></div>
-            <button id="final-btn" class="btn btn-primary" style="width:100%" disabled onclick="submitBooking()">Submit</button>
+            <h3>Payment & UTR</h3>
+            <div style="background:#f9f9f9; padding:15px; margin:10px 0; border-radius:8px;">
+                <img id="upi-qr" src="" style="width:150px; height:150px;">
+                <p>Deposit: <span id="dep-amt" style="font-weight:bold; color:var(--primary);"></span></p>
+            </div>
+            <input type="text" id="utr" placeholder="12-digit UTR Number" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd;">
+            <button class="btn btn-primary" style="width:100%" onclick="submitRequest()">SEND REQUEST</button>
+            <p style="font-size:0.7rem; color:#888; margin-top:10px;">Admin will verify and reserve your bike manually.</p>
         </div>
     </div>
 
-    <div id="loginModal" class="modal"><div class="modal-content"><h2>Login</h2><input type="email" id="lEmail" placeholder="Email" style="width:100%; padding:12px; margin:10px 0;"><input type="password" id="lPass" placeholder="Pass" style="width:100%; padding:12px; margin:10px 0;"><button class="btn btn-primary" onclick="doLogin()">Login</button></div></div>
-    <div id="signupModal" class="modal"><div class="modal-content"><h2>Sign Up</h2><input type="text" id="sName" placeholder="Name" style="width:100%; padding:12px; margin:10px 0;"><input type="email" id="sEmail" placeholder="Email" style="width:100%; padding:12px; margin:10px 0;"><input type="password" id="sPass" placeholder="Pass" style="width:100%; padding:12px; margin:10px 0;"><button class="btn btn-primary" onclick="doSignup()">Sign Up</button></div></div>
+    <div id="loginModal" class="modal"><div class="modal-content"><h2>Login</h2><input type="email" id="lEmail" placeholder="Email" style="width:100%; padding:10px; margin:10px 0;"><input type="password" id="lPass" placeholder="Password" style="width:100%; padding:10px; margin:10px 0;"><button class="btn btn-primary" style="width:100%" onclick="doLogin()">Login</button></div></div>
 
     <footer id="main-footer">
         <div class="founder-grid">
@@ -127,8 +84,7 @@
     </footer>
 
     <script>
-        let bikes = []; let selectedBike = null;
-        let hasLoadedOnce = false; // FEATURE 2: Loading logic tracker
+        let bikes = []; let selectedBike = null; let hasLoadedOnce = false;
 
         async function init() {
             const res = await fetch('/api/bikes'); bikes = await res.json();
@@ -136,19 +92,13 @@
             checkUser();
         }
 
-        // FEATURE 2: Multi-timed Loading Screen
         function navigate(view) {
             const loader = document.getElementById('loader');
             loader.style.display = 'flex';
-            
-            const waitTime = hasLoadedOnce ? 1000 : 2000;
-            
             setTimeout(() => {
                 loader.style.display = 'none';
-                document.getElementById('home-view').style.display = view === 'home' ? 'block' : 'none';
-                document.getElementById('details-view').style.display = view === 'details' ? 'block' : 'none';
                 hasLoadedOnce = true;
-            }, waitTime);
+            }, hasLoadedOnce ? 1000 : 2000);
         }
 
         function render() {
@@ -156,79 +106,61 @@
             const cats = { scooter: "SCOOTERS", ev: "EV's", motorcycle: "MOTOR BIKES" };
             container.innerHTML = Object.entries(cats).map(([key, label]) => {
                 const list = bikes.filter(b => b.cat === key);
-                return `<div style="padding:0 5%; margin:40px 0 20px; color:var(--primary); font-size:1.5rem; border-left:4px solid var(--gold); padding-left:15px;">${label}</div><div class="bikes-grid">${list.map(b => `
-                    <div class="bike-card" onclick="openDetails('${b.name}')">
+                return `<div style="padding:0 5%; margin:30px 0 10px; color:var(--primary); font-size:1.2rem; border-left:4px solid var(--gold); padding-left:15px;">${label}</div><div class="bikes-grid">${list.map(b => `
+                    <div class="bike-card" onclick="openPay('${b.name}')">
                         <div class="bike-image" style="background-image: url('${b.img}')"></div>
                         <div class="bike-info">
-                            <h3>${b.name}</h3><div style="color:var(--gold); font-weight:bold;">₹${b.price}/day</div>
+                            <h3>${b.name}</h3>
+                            <div style="color:var(--gold); font-weight:bold; font-size:0.9rem;">₹${b.price}/day</div>
+                            <div style="font-size:0.7rem; color:${b.stock - b.rented > 0 ? 'green' : 'red'};">${b.stock - b.rented > 0 ? 'Available' : 'Not Available'}</div>
                         </div>
                     </div>`).join('')}</div>`;
             }).join('');
         }
 
-        function openDetails(name) {
+        function openPay(name) {
             selectedBike = bikes.find(b => b.name === name);
-            document.getElementById('detail-img').src = selectedBike.img;
-            document.getElementById('spec-cc').innerText = selectedBike.cc || "125cc";
-            document.getElementById('spec-km').innerText = selectedBike.km || "12,000";
-            document.getElementById('spec-year').innerText = selectedBike.year || "2023";
-            document.getElementById('p-day').innerText = `₹${selectedBike.price}`;
-            navigate('details');
+            if(selectedBike.stock - selectedBike.rented <= 0) return alert("This bike is currently not available.");
+            
+            const dep = (selectedBike.price * 0.20).toFixed(2);
+            document.getElementById('dep-amt').innerText = `₹${dep}`;
+            const upi = `upi://pay?pa=adarshrajput9876-1@okicici&pn=WheelAdventure&am=${dep}&cu=INR`;
+            document.getElementById('upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upi)}`;
+            openM('payModal');
         }
 
-        // FEATURE 3: Logout Fix
-        function logout() {
-            localStorage.removeItem('wheelUser');
-            location.reload();
+        async function submitRequest() {
+            const utr = document.getElementById('utr').value;
+            if(utr.length < 10) return alert("Valid UTR required");
+            
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                const res = await fetch('/api/request-booking', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        bikeName: selectedBike.name,
+                        customerName: "Client", 
+                        phone: "987XXXXXXX",
+                        days: 1,
+                        transactionId: utr
+                    })
+                });
+                if(res.ok) { alert("Request Sent! Wait for Admin confirmation."); location.reload(); }
+            } finally { document.getElementById('loader').style.display = 'none'; }
         }
 
         function checkUser() {
             const u = localStorage.getItem('wheelUser');
             if(u) { const d = JSON.parse(u); document.getElementById('auth-section').style.display='none'; document.getElementById('user-section').style.display='block'; document.getElementById('user-display').innerText=d.name; }
         }
-
+        function logout() { localStorage.removeItem('wheelUser'); location.reload(); }
         async function doLogin() {
             const email = document.getElementById('lEmail').value;
             const password = document.getElementById('lPass').value;
             const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, password})});
             if(res.ok) { const d = await res.json(); localStorage.setItem('wheelUser', JSON.stringify(d)); location.reload(); }
         }
-
-        async function doSignup() {
-            const name = document.getElementById('sName').value;
-            const email = document.getElementById('sEmail').value;
-            const password = document.getElementById('sPass').value;
-            const res = await fetch('/api/signup', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, email, password})});
-            if(res.ok) { alert("Created!"); location.reload(); }
-        }
-
-        async function autoScan() {
-            const utr = document.getElementById('utr').value;
-            const file = document.getElementById('screenshot').files[0];
-            const { data: { text } } = await Tesseract.recognize(file, 'eng');
-            if(text.replace(/\s/g, '').includes(utr)) {
-                document.getElementById('scan-status').innerHTML = "✅ Match Found!";
-                document.getElementById('final-btn').disabled = false;
-            }
-        }
-
-        function showPay() {
-            const upi = `upi://pay?pa=adarshrajput9876-1@okicici&pn=WheelAdventure&am=500&cu=INR`;
-            document.getElementById('upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upi)}`;
-            openM('payModal');
-        }
-
-        async function submitBooking() {
-            const fd = new FormData();
-            fd.append('bikeName', selectedBike.name);
-            fd.append('customerName', document.getElementById('c-name').value);
-            fd.append('phone', document.getElementById('c-phone').value);
-            fd.append('transactionId', document.getElementById('utr').value);
-            fd.append('screenshot', document.getElementById('screenshot').files[0]);
-            const res = await fetch('/api/book', { method: 'POST', body: fd });
-            if(res.ok) { alert("Auto-Verified!"); location.reload(); }
-        }
-
         function openM(id) { document.getElementById(id).style.display='flex'; }
         init();
     </script>
