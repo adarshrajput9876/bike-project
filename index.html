@@ -50,19 +50,17 @@
         .how-step { max-width: 220px; }
         .how-icon { font-size: 3.5rem; color: var(--gold); margin-bottom: 15px; }
 
-        /* Catalog Grid (Length and Scale Decreased as requested) */
+        /* Catalog Grid (Length and Scale Decreased) */
         .bikes-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; padding: 0 5%; } 
         @media (min-width: 992px) { .bikes-grid { grid-template-columns: repeat(3, 1fr); } }
 
         .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transform: scale(0.9); transition: 0.3s; margin: auto; width: 100%; } 
         .bike-card:hover { transform: scale(0.95); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         
-        /* Adjusted Bike Image to Contain and show fully clearly */
         .bike-image { height: 220px; background-size: contain; background-repeat: no-repeat; background-position: center; border-bottom: 3px solid var(--gold); background-color: #ffffff; padding: 10px; }
-        
         .bike-info { padding: 15px; text-align: center; }
 
-        /* NEW: FAQ Section Banner (RenTrip Style) */
+        /* FAQ Section Banner */
         .faq-section { padding: 60px 5%; background: #ffffff; margin-top: 40px; border-top: 1px solid #eee; }
         .faq-title { text-align: center; color: var(--primary); font-size: 2.2rem; margin-bottom: 40px; font-weight: bold; }
         .faq-container { max-width: 800px; margin: 0 auto; }
@@ -74,7 +72,7 @@
         .faq-item.active .faq-question::after { content: '−'; }
         .faq-item.active .faq-answer { display: block; }
 
-        /* Bike Details Page Style */
+        /* Details Page Style (Used for Bikes & Info Pages) */
         .details-page { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .details-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px; }
         @media (min-width: 768px) { .details-grid { grid-template-columns: 1fr 1fr; } }
@@ -91,11 +89,19 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 8px; width: 100%; max-width: 420px; text-align: center; }
 
-        footer { background: var(--primary); color: white; padding: 40px 5%; margin-top: 60px; }
+        /* SMALLER FOOTER & LINKS SECTION */
+        footer { background: var(--primary); color: white; padding: 25px 5%; margin-top: 40px; }
         
-        /* Founders aligned in a column */
-        .founder-column { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
-        .founder-card { background: rgba(0, 0, 0, 0.2); padding: 20px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 500px; }
+        .footer-links { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .footer-links a { color: var(--gold); text-decoration: none; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .footer-links a:hover { color: #fff; }
+
+        /* Founders aligned in a smaller column */
+        .founder-column { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+        .founder-card { background: rgba(0, 0, 0, 0.2); padding: 15px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 350px; }
+        .founder-card h3 { color: var(--gold); font-size: 1.2rem; margin-bottom: 3px; }
+        .founder-card p.role { font-size: 0.9rem; color: #ddd; margin-bottom: 5px; }
+        .founder-card p.phone { color: #fff; font-weight: bold; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -189,6 +195,12 @@
         </div>
     </div>
 
+    <div id="info-view" class="details-page" style="max-width: 800px;">
+        <button class="btn" style="background:transparent; color:#888; border:1px solid #ddd; margin-bottom:20px;" onclick="navigate('home')">← Back to Home</button>
+        <h2 id="info-title" style="color:var(--primary); margin-bottom:15px; border-bottom: 2px solid var(--gold); padding-bottom:10px;"></h2>
+        <div id="info-content" style="color:#555; line-height:1.7; font-size:1.05rem;"></div>
+    </div>
+
     <div id="bookingModal" class="modal">
         <div class="modal-content">
             <h2 style="color:var(--primary); margin-bottom:20px;">Reservation Details</h2>
@@ -248,28 +260,45 @@
     </div>
 
     <footer id="main-footer">
-        <h2 style="text-align:center; color:var(--gold); margin-bottom:30px;">Our Executive Team</h2>
+        <div class="footer-links">
+            <a onclick="showInfo('about')">About Wheel Adventure</a>
+            <a onclick="showInfo('why')">Why Choose Us?</a>
+        </div>
+
+        <h2 style="text-align:center; color:var(--gold); margin-bottom:20px; font-size:1.4rem;">Our Executive Team</h2>
         <div class="founder-column">
             <div class="founder-card">
-                <h3 style="color:var(--gold); font-size:1.6rem;">Girish Kumar</h3>
-                <p style="font-size:1.1rem; color:#ddd; margin-bottom: 5px;">Founder</p>
-                <p style="color:#fff; font-weight:bold; margin-top:5px; font-size:1.2rem;">📞 7618192808</p>
+                <h3>Girish Kumar</h3>
+                <p class="role">Founder</p>
+                <p class="phone">📞 7618192808</p>
             </div>
             <div class="founder-card">
-                <h4 style="color:var(--gold); font-size:1.3rem;">Adarsh Verma</h4>
-                <p style="font-size:1rem; color:#ddd; margin-bottom: 5px;">Co-Founder & Lead Developer</p>
-                <p style="color:#fff; font-weight:bold; margin-top:5px; font-size:1.1rem;">📞 9258395352</p>
+                <h3>Adarsh Verma</h3>
+                <p class="role">Co-Founder & Lead Developer</p>
+                <p class="phone">📞 9258395352</p>
             </div>
             <div class="founder-card">
-                <h4 style="color:var(--gold); font-size:1.3rem;">Himanshu Kumar</h4>
-                <p style="font-size:1rem; color:#ddd; margin-bottom: 5px;">Co-Founder & Operations Head</p>
-                <p style="color:#fff; font-weight:bold; margin-top:5px; font-size:1.1rem;">📞 8859905812</p>
+                <h3>Himanshu Kumar</h3>
+                <p class="role">Co-Founder & Operations Head</p>
+                <p class="phone">📞 8859905812</p>
             </div>
         </div>
     </footer>
 
     <script>
         let bikes = []; let selectedBike = null; let hasLoadedOnce = false;
+
+        // Info Page Content (For Footer Links)
+        const infoData = {
+            about: {
+                title: "About Wheel Adventure",
+                content: "<p style='margin-bottom:15px;'>Wheel Adventure is Aligarh's most trusted and reliable two-wheeler rental platform. Founded by a dedicated team of tech enthusiasts and operational experts, our mission is to provide affordable, seamless, and high-quality mobility solutions to students, tourists, and locals.</p><h3 style='color:var(--primary); margin-top:20px; margin-bottom:10px;'>Our Vision</h3><p>To eliminate transportation hurdles in Aligarh by offering an accessible fleet of well-maintained scooters and motorbikes, ensuring everyone can commute safely and independently.</p>"
+            },
+            why: {
+                title: "Why Choose Wheel Adventure?",
+                content: "<h3 style='color:var(--primary); margin-bottom:5px;'>1. 100% Verified Fleet</h3><p style='margin-bottom:15px;'>Every vehicle in the Aligarh Hub goes through strict mechanical checks before being handed over.</p><h3 style='color:var(--primary); margin-bottom:5px;'>2. Zero Hidden Charges</h3><p style='margin-bottom:15px;'>What you see is what you pay. We don't believe in surprise fees.</p><h3 style='color:var(--primary); margin-bottom:5px;'>3. Limitless Kilometers</h3><p style='margin-bottom:15px;'>Enjoy complete freedom with zero limits on how far you can ride during your rental period.</p><h3 style='color:var(--primary); margin-bottom:5px;'>4. Student-Friendly Pricing</h3><p>We've tailored our tariff specifically to accommodate the budget of Aligarh's student community.</p>"
+            }
+        };
 
         async function init() {
             const res = await fetch('/api/bikes'); bikes = await res.json();
@@ -284,11 +313,19 @@
                 loader.style.display = 'none';
                 document.getElementById('home-view').style.display = view === 'home' ? 'block' : 'none';
                 document.getElementById('details-view').style.display = view === 'details' ? 'block' : 'none';
+                document.getElementById('info-view').style.display = view === 'info' ? 'block' : 'none';
                 hasLoadedOnce = true;
             }, hasLoadedOnce ? 1000 : 2000);
         }
 
-        // Script to handle FAQ toggle
+        // Display Info Page from Footer
+        function showInfo(topic) {
+            document.getElementById('info-title').innerHTML = infoData[topic].title;
+            document.getElementById('info-content').innerHTML = infoData[topic].content;
+            navigate('info');
+            window.scrollTo(0,0);
+        }
+
         function toggleFAQ(element) {
             element.parentElement.classList.toggle('active');
         }
