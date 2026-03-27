@@ -50,17 +50,29 @@
         .how-step { max-width: 220px; }
         .how-icon { font-size: 3.5rem; color: var(--gold); margin-bottom: 15px; }
 
-        /* Catalog Grid */
+        /* Catalog Grid (Length and Scale Decreased as requested) */
         .bikes-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; padding: 0 5%; } 
         @media (min-width: 992px) { .bikes-grid { grid-template-columns: repeat(3, 1fr); } }
 
         .bike-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); cursor: pointer; transform: scale(0.9); transition: 0.3s; margin: auto; width: 100%; } 
         .bike-card:hover { transform: scale(0.95); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         
-        /* ADJUSTED: Image size and object-fit updated to "contain" so the full bike is always clearly visible without getting cut off */
+        /* Adjusted Bike Image to Contain and show fully clearly */
         .bike-image { height: 220px; background-size: contain; background-repeat: no-repeat; background-position: center; border-bottom: 3px solid var(--gold); background-color: #ffffff; padding: 10px; }
         
         .bike-info { padding: 15px; text-align: center; }
+
+        /* NEW: FAQ Section Banner (RenTrip Style) */
+        .faq-section { padding: 60px 5%; background: #ffffff; margin-top: 40px; border-top: 1px solid #eee; }
+        .faq-title { text-align: center; color: var(--primary); font-size: 2.2rem; margin-bottom: 40px; font-weight: bold; }
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-item { border-bottom: 1px solid #ddd; }
+        .faq-question { width: 100%; text-align: left; padding: 20px 10px; font-size: 1.1rem; font-weight: 600; color: var(--primary); background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
+        .faq-question:hover { background: #f9f9f9; }
+        .faq-answer { padding: 0 10px 20px 10px; color: #555; display: none; line-height: 1.6; font-size: 0.95rem; }
+        .faq-question::after { content: '+'; font-size: 1.5rem; color: var(--gold); font-weight: normal; }
+        .faq-item.active .faq-question::after { content: '−'; }
+        .faq-item.active .faq-answer { display: block; }
 
         /* Bike Details Page Style */
         .details-page { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -81,9 +93,9 @@
 
         footer { background: var(--primary); color: white; padding: 40px 5%; margin-top: 60px; }
         
-        /* MODIFIED: Founders aligned in a column */
+        /* Founders aligned in a column */
         .founder-column { display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
-        .founder-card { background: rgba(0, 0, 0, 0.2); padding: 15px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; }
+        .founder-card { background: rgba(0, 0, 0, 0.2); padding: 20px 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 500px; }
     </style>
 </head>
 <body>
@@ -131,6 +143,28 @@
         </div>
 
         <div id="sections" style="padding-top: 20px;"></div>
+
+        <div class="faq-section">
+            <h2 class="faq-title">Got questions? We've got answers.</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">Is fuel included in tariff?</button>
+                    <div class="faq-answer">No, fuel is not included in the rental amount. We provide sufficient fuel to reach the nearest petrol pump. You will need to refuel the vehicle according to your own travel requirements.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">What documents are required to rent a vehicle?</button>
+                    <div class="faq-answer">You are required to submit a valid Driving License along with an original government-issued ID proof (like Aadhar Card or PAN Card) when you pick up the vehicle from our Hub.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">Can I extend my booking period?</button>
+                    <div class="faq-answer">Yes, you can easily extend your booking by contacting the Hub Admin before your current reservation expires. Extension is completely subject to the future availability of the bike.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">What happens in case of a breakdown?</button>
+                    <div class="faq-answer">All our vehicles are thoroughly serviced, but in the rare event of a mechanical breakdown, please contact our support team immediately. We will assist you as quickly as possible.</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="details-view" class="details-page">
@@ -217,19 +251,19 @@
         <h2 style="text-align:center; color:var(--gold); margin-bottom:30px;">Our Executive Team</h2>
         <div class="founder-column">
             <div class="founder-card">
-                <h3 style="color:var(--gold); font-size:1.4rem;">Girish Kumar</h3>
-                <p style="font-size:1rem; color:#ddd;">Founder</p>
-                <p style="color:#fff; font-weight:bold; margin-top:5px;">📞 7618192808</p>
+                <h3 style="color:var(--gold); font-size:1.6rem;">Girish Kumar</h3>
+                <p style="font-size:1.1rem; color:#ddd; margin-bottom: 5px;">Founder</p>
+                <p style="color:#fff; font-weight:bold; margin-top:5px; font-size:1.2rem;">📞 7618192808</p>
             </div>
             <div class="founder-card">
-                <h4 style="color:var(--gold); font-size:1.2rem;">Adarsh Verma</h4>
-                <p style="font-size:0.9rem; color:#ddd;">Co-Founder & Lead Developer</p>
-                <p style="color:#fff; font-weight:bold; margin-top:5px;">📞 9258395352</p>
+                <h4 style="color:var(--gold); font-size:1.3rem;">Adarsh Verma</h4>
+                <p style="font-size:1rem; color:#ddd; margin-bottom: 5px;">Co-Founder & Lead Developer</p>
+                <p style="color:#fff; font-weight:bold; margin-top:5px; font-size:1.1rem;">📞 9258395352</p>
             </div>
             <div class="founder-card">
-                <h4 style="color:var(--gold); font-size:1.2rem;">Himanshu Kumar</h4>
-                <p style="font-size:0.9rem; color:#ddd;">Co-Founder & Operations Head</p>
-                <p style="color:#fff; font-weight:bold; margin-top:5px;">📞 8859905812</p>
+                <h4 style="color:var(--gold); font-size:1.3rem;">Himanshu Kumar</h4>
+                <p style="font-size:1rem; color:#ddd; margin-bottom: 5px;">Co-Founder & Operations Head</p>
+                <p style="color:#fff; font-weight:bold; margin-top:5px; font-size:1.1rem;">📞 8859905812</p>
             </div>
         </div>
     </footer>
@@ -252,6 +286,11 @@
                 document.getElementById('details-view').style.display = view === 'details' ? 'block' : 'none';
                 hasLoadedOnce = true;
             }, hasLoadedOnce ? 1000 : 2000);
+        }
+
+        // Script to handle FAQ toggle
+        function toggleFAQ(element) {
+            element.parentElement.classList.toggle('active');
         }
 
         function render() {
@@ -340,9 +379,7 @@
             const u = localStorage.getItem('wheelUser');
             if(u) { const d = JSON.parse(u); document.getElementById('auth-section').style.display='none'; document.getElementById('user-section').style.display='block'; document.getElementById('user-display').innerText=d.name; }
         }
-        
         function logout() { localStorage.removeItem('wheelUser'); location.reload(); }
-        
         async function doLogin() {
             const email = document.getElementById('lEmail').value;
             const password = document.getElementById('lPass').value;
@@ -351,7 +388,6 @@
             else { alert("Invalid credentials."); }
         }
 
-        // ADDED: Sign up function linked to new modal
         async function doSignup() {
             const name = document.getElementById('sName').value;
             const email = document.getElementById('sEmail').value;
